@@ -24,6 +24,8 @@ class TGSThread extends Thread{
 				String Prelude = fromclient.get("Prelude");
 				System.out.println("Prelude:"+Prelude);
 				Calendar c = Calendar.getInstance(); 
+				
+				//添加了一点注释
 				int month = c.get(Calendar.MONTH);
 				int date = c.get(Calendar.DATE);
 				int hour = c.get(Calendar.HOUR_OF_DAY);
