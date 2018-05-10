@@ -35,7 +35,7 @@ public class chatthread extends Thread{
 				Socket Sockets = Servers.accept();
 				InputStream in =Sockets.getInputStream();
 				ObjectInputStream ois =new ObjectInputStream(in);
-				@SuppressWarnings("unchecked")
+				//@SuppressWarnings("unchecked");
 				while(true) {
 				HashMap<String,String> fromclient = (HashMap<String,String>)ois.readObject();
 				String Prelude = fromclient.get("Prelude");

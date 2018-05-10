@@ -5,8 +5,21 @@ import java.util.HashMap;
 class ASThread extends Thread{
 	public static final String SERVER_IP = "127.0.0.1";
 	int portnum;
+	public String Prelude;
+	public String IDtgs;
+	public String IDc;
+	public String TS1;
 	public ASThread(int num) {
 		portnum = num;
+	}
+	public void unpacked(HashMap<String, String> fromclient)
+	{
+		Prelude = fromclient.get("Prelude");
+		System.out.println("Prelude:"+Prelude);
+		IDtgs = fromclient.get("IDtgs");
+		System.out.println("IDtgs"+IDtgs);
+		IDc = fromclient.get("IDc");
+		System.out.println("IDc:"+IDc);
 	}
 	public void run() {
 			try {
@@ -18,11 +31,15 @@ class ASThread extends Thread{
 				InputStream in =Sockets.getInputStream();
 				ObjectInputStream ois =new ObjectInputStream(in);
 				@SuppressWarnings("unchecked")
+				
+				
 				HashMap<String,String> fromclient = (HashMap<String,String>)ois.readObject();
 				System.out.println("portnum:"+portnum);
 				HashMap<String,String> toclient = new HashMap<String,String>();
 				String TS1 = fromclient.get("TS1");
-				Calendar c = Calendar.getInstance(); 
+				Calendar c = Calendar.getInstance();
+				
+				
 				int month = c.get(Calendar.MONTH);
 				int date = c.get(Calendar.DATE);
 				int hour = c.get(Calendar.HOUR_OF_DAY);
