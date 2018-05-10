@@ -1,3 +1,4 @@
+package Cpackage;
 import java.net.*; 
 import java.io.IOException;  
 import java.io.InputStream;
@@ -5,18 +6,17 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.*;
-public class Client01 {
-	static final int ASport = 10000;
-	static final int TGSport = 10004;
+public class Client02 {
+	static final int myport = 10001;
 	public static final String AS_IP = "127.0.0.1";
-	public static final String TGS_IP = "127.0.0.1";
-	public static final String chatV_IP = "127.0.0.1";
-	public static final String FTPV_IP = "127.0.0.1";
+	public static final String TGS_IP = "";
+	public static final String V1_IP = "";
+	public static final String V2_IP = "";
 	public static final String My_IP = "127.0.0.1";
 	@SuppressWarnings("unchecked")
 	public static void main(String args[]) throws ClassNotFoundException {
 		try {
-			 Socket socket = new Socket(AS_IP, ASport);  
+			 Socket socket = new Socket(AS_IP, myport);  
 			 HashMap<String,String> ToAs = new HashMap<String,String>();
 			 ToAs.put("Prelude", "000100000000");
 			 ToAs.put("IDc","001");
@@ -37,21 +37,6 @@ public class Client01 {
 	         //²ð°ü
 	         String as_Prelude = FromAs.get("Prelude");
 	         System.out.println(as_Prelude);
-	         socket.close();
-	         socket = new Socket(TGS_IP,TGSport);
-	         HashMap<String,String> ToTGS = new HashMap<String,String>();
-	         ToTGS.put("Prelude", "001000000000");
-	         ToTGS.put("IDv","chat");
-	         ToTGS.put("Ticket(tgs)","xxx");
-	         ToTGS.put("Authenticator", "yyy");
-	         os = socket.getOutputStream();
-	         oos = new ObjectOutputStream(os);
-	         oos.writeObject(ToTGS);
-	         is = socket.getInputStream();
-	         ois = new ObjectInputStream(is);
-	         HashMap<String ,String> FromTGS = (HashMap<String, String>) ois.readObject();
-	         String tgs_Prelude = FromTGS.get("Prelude");
-	         System.out.println(tgs_Prelude);
 	         socket.close();
 		}catch(IOException e) {
 			e.printStackTrace();

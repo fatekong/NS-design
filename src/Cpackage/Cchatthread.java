@@ -1,17 +1,17 @@
+package Cpackage;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Vector;
 import java.io.*;
 import java.net.*;
-public class chatthread extends Thread{
+public class Cchatthread extends Thread {
 	public static final String SERVER_IP = "127.0.0.1";
-	int my = 0;
+	int my;
 	String flag = "";
 	int portnum_in;
 	int portnum_out;
 	int portnum;
-	public chatthread(int port , String f ) {
-		this.portnum = port;
+	private String USER = "";
+	public Cchatthread(int port , String f , String u) {
 		if(port == 10008) {
 			my = 0;
 		}
@@ -24,9 +24,11 @@ public class chatthread extends Thread{
 		else if(port == 10011) {
 			my = 3;
 		}
-		this.flag = f;
+		this.portnum = port;
 		this.portnum_in = port + 1000;
 		this.portnum_out = port + 1100;
+		this.flag = f;
+		this.USER = u;
 	}
 	public void run() {
 		if(flag.equals("in")) {
@@ -35,30 +37,19 @@ public class chatthread extends Thread{
 				Socket Sockets = Servers.accept();
 				InputStream in =Sockets.getInputStream();
 				ObjectInputStream ois =new ObjectInputStream(in);
-				@SuppressWarnings("unchecked")
 				while(true) {
+				@SuppressWarnings("unchecked")
 				HashMap<String,String> fromclient = (HashMap<String,String>)ois.readObject();
 				String Prelude = fromclient.get("Prelude");
 				System.out.println("Prelude:"+Prelude);
-				if(Prelude.equals("001101000000")) {
+				if(Prelude.equals(Appoint_Prelude.V_C_chat)) {
 					String Time = fromclient.get("time");
 					String User = fromclient.get("user");
 					String Conv = fromclient.get("conv");
-					ChatInfor ci = new ChatInfor();
-					ci.SetConv(Conv);
-					ci.SetTime(Time);
-					ci.SetUser(User);
-					chatV.queue.add(ci);
+					System.out.println(Time + "-" + User + ":" + Conv);
 				}
-				else if(Prelude.equals("001111000000")){
-					if(portnum == 10008)
-						chatV.state[0] = 0;
-					else if(portnum == 10009)
-						chatV.state[1] = 0;
-					else if(portnum == 10010)
-						chatV.state[2] = 0;
-					else if(portnum == 10011)
-						chatV.state[3] = 0;
+				else if(Prelude.equals(Appoint_Prelude.V_C_chatcut)){
+					Servers.close();
 					break;
 				}
 				}
@@ -68,20 +59,30 @@ public class chatthread extends Thread{
 		}
 		else if(flag.equals("out")){
 			try {
-				ServerSocket Servers = new ServerSocket(portnum_out);
-				Socket Sockets = Servers.accept();
-				OutputStream out = Sockets.getOutputStream();
+				Socket socket = new Socket(Client04.chatV_IP, portnum_out);
+				OutputStream out = socket.getOutputStream();
 				ObjectOutputStream oos =new ObjectOutputStream(out);
-				HashMap<String , String> toclient = new HashMap<String , String>();
-				for(int i = chatV.pre[my] ; i < chatV.queue.size() ; i ++) {
-					chatV.pre[my]++;
-					toclient.put("time", chatV.queue.get(i).GetTime());
-					toclient.put("user", chatV.queue.get(i).GetUser());
-					toclient.put("conv", chatV.queue.get(i).GetConv());
+				while(true) {
+					if(Client04.state[my] == 0) {
+						socket.close();
+						break;
+					}
+					HashMap<String , String> toclient = new HashMap<String , String>();
+						toclient.put("Prelude", Appoint_Prelude.C_V_chat);
+						Calendar c = Calendar.getInstance(); 
+						int month = c.get(Calendar.MONTH);   
+						int date = c.get(Calendar.DATE);    
+						int hour = c.get(Calendar.HOUR_OF_DAY);
+						int minute = c.get(Calendar.MINUTE);
+						String time = month + "-" + date + "-" + hour + "-" +minute;
+						toclient.put("time", time);
+						toclient.put("user", USER);
+						toclient.put("conv", "xxxxx");
+						oos.writeObject(toclient);
+						Thread.sleep(1);
 				}
-				toclient.put("Prelude", "110001000000");
 				
-			}catch(IOException e) {
+			}catch(IOException | InterruptedException e) {
 				System.out.println("´íÎó");
 			}
 		}
