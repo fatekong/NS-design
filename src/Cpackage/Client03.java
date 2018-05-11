@@ -10,8 +10,9 @@ public class Client03 {
 	static final int myport = 10010;
 	static final String chatV_IP = "127.0.0.1";
 	public static final String My_IP = "127.0.0.1";
-	static final String MyName = "Ìð½´";
-	static final int[] state = {0,0,0,0};
+	static final String MyName = "ÎÄ¹·";
+	//static final int[] state = {0,0,0,0};
+	static final int my = 2;
 	@SuppressWarnings("resource")
 	public static void main(String args[]) throws ClassNotFoundException {
 		try {
@@ -30,16 +31,9 @@ public class Client03 {
 			String prelude = fromchatV.get("Prelude");
 			System.out.println("V:"+prelude);
 			if(prelude.equals(Appoint_Prelude.V_C)) {
-				if(myport == 10008)
-					state[0] = 1;
-				else if(myport == 10009)
-					state[1] = 1;
-				else if(myport == 10010)
-					state[2] = 1;
-				else if(myport == 10011)
-					state[3] = 1;
-				Cchatthread init = new Cchatthread(myport,"in",MyName);
-				Cchatthread out = new Cchatthread(myport,"out",MyName);
+					Appoint_Client.state[my] = 1;
+				Cchatthread init = new Cchatthread(myport,my,"in",MyName);
+				Cchatthread out = new Cchatthread(myport,my,"out",MyName);
 				init.start();
 				out.start();
 			}

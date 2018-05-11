@@ -11,19 +11,8 @@ public class Cchatthread extends Thread {
 	int portnum_out;
 	int portnum;
 	private String USER = "";
-	public Cchatthread(int port , String f , String u) {
-		if(port == 10008) {
-			my = 0;
-		}
-		else if(port == 10009) {
-			my = 1;
-		}
-		else if(port == 10010) {
-			my = 2;
-		}
-		else if(port == 10011) {
-			my = 3;
-		}
+	public Cchatthread(int port ,int m , String f , String u) {
+		this.my = m;
 		this.portnum = port;
 		this.portnum_in = port + 1100;
 		this.portnum_out = port + 1000;
@@ -50,7 +39,7 @@ public class Cchatthread extends Thread {
 				}
 				else if(Prelude.equals(Appoint_Prelude.V_C_chatcut)){
 					Servers.close();
-					Client04.state[my] = 0;
+					Appoint_Client.state[my] = 0;
 					break;
 				}
 				}
@@ -64,7 +53,7 @@ public class Cchatthread extends Thread {
 				OutputStream out = socket.getOutputStream();
 				ObjectOutputStream oos =new ObjectOutputStream(out);
 				while(true) {
-					if(Client04.state[my] == 0) {
+					if(Appoint_Client.state[my] == 0) {
 						socket.close();
 						break;
 					}
@@ -78,9 +67,12 @@ public class Cchatthread extends Thread {
 						String time = month + "月" + date + "日" + hour + "时" + minute + "分";
 						toclient.put("time", time);
 						toclient.put("user", USER);
-						toclient.put("conv", "我是萝莉控");
+						if(my == 3)
+							toclient.put("conv", "我是萝莉控");
+						else if(my == 2)
+							toclient.put("conv", "狗一样的男人");
 						oos.writeObject(toclient);
-						Thread.sleep(1000);
+						Thread.sleep(3000);
 				}
 				
 			}catch(IOException | InterruptedException e) {
