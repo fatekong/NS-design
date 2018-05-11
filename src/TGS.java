@@ -66,6 +66,16 @@ class TGSThread extends Thread{
 				HashMap<String,String> fromclient = (HashMap<String,String>)ois.readObject();
 				System.out.println("portnum:"+portnum);
 				unpacked(fromclient);
+				
+				if()
+				{
+					
+				}
+				if()
+				{
+					
+				}
+				
 				Calendar c = Calendar.getInstance(); 
 				int month = c.get(Calendar.MONTH);
 				int date = c.get(Calendar.DATE);
