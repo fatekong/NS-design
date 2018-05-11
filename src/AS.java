@@ -20,6 +20,8 @@ class ASThread extends Thread{
 		System.out.println("IDtgs"+IDtgs);
 		IDc = fromclient.get("IDc");
 		System.out.println("IDc:"+IDc);
+		String TS1 = fromclient.get("TS1");
+		System.out.println("TS1:"+TS1);
 	}
 	public void run() {
 			try {
@@ -31,20 +33,19 @@ class ASThread extends Thread{
 				InputStream in =Sockets.getInputStream();
 				ObjectInputStream ois =new ObjectInputStream(in);
 				@SuppressWarnings("unchecked")
-				
-				
 				HashMap<String,String> fromclient = (HashMap<String,String>)ois.readObject();
-				System.out.println("portnum:"+portnum);
-				HashMap<String,String> toclient = new HashMap<String,String>();
-				String TS1 = fromclient.get("TS1");
+				unpacked(fromclient);
+
+				
+				
 				Calendar c = Calendar.getInstance();
-				
-				
 				int month = c.get(Calendar.MONTH);
 				int date = c.get(Calendar.DATE);
 				int hour = c.get(Calendar.HOUR_OF_DAY);
 				int minute = c.get(Calendar.MINUTE);
 				String[] ts = TS1.split("-");
+				
+				HashMap<String,String> toclient = new HashMap<String,String>();
 				if(month == Integer.parseInt(ts[0]) && date == Integer.parseInt(ts[1]) && hour == Integer.parseInt(ts[2])) {
 					if(minute - Integer.parseInt(ts[3])<1) {
 						toclient.put("Prelude", "010000000000");
@@ -66,6 +67,13 @@ class ASThread extends Thread{
 					toclient.put("Prelude", "010010000000");
 					toclient.put("error", "超时");
 					oos.writeObject(toclient);
+				}
+				if()//检查首部中的各项数据
+				{
+					toclient.put("Prelude", "AS_C");
+					toclient.put("error", "首部出错");
+					oos.writeObject(toclient);
+					continue;//如果有错返回数据重新开始监听
 				}
 				}
 				//Servers.close();

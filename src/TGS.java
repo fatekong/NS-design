@@ -19,6 +19,7 @@ class TGSThread extends Thread{
 	public String LifeTime2;
 	public String Authenticator;
 	public String Authenticator_M;//解密后的Authenticator
+	public String checker;//检票用
 	public TGSThread(int num) {
 		portnum = num;
 	}
@@ -66,16 +67,7 @@ class TGSThread extends Thread{
 				HashMap<String,String> fromclient = (HashMap<String,String>)ois.readObject();
 				System.out.println("portnum:"+portnum);
 				unpacked(fromclient);
-				
-				if()
-				{
-					
-				}
-				if()
-				{
-					
-				}
-				
+
 				Calendar c = Calendar.getInstance(); 
 				int month = c.get(Calendar.MONTH);
 				int date = c.get(Calendar.DATE);
@@ -111,7 +103,21 @@ class TGSThread extends Thread{
 					toclient.put("Prelude", "010010000000");
 					toclient.put("error", "超时");
 					oos.writeObject(toclient);
-				}*/
+				}
+					if()//检查首部数据如果有误返回错误信息重新开始监听
+					{
+						toclient.put("Prelude", "TGS_C");
+						toclient.put("error", "首部出错");
+						oos.writeObject(toclient);
+						continue;
+					}
+					if()//检查tickets中的各项数据
+					{
+						toclient.put("Prelude", "TGS_C");
+						toclient.put("error", "tickets出错");
+						oos.writeObject(toclient);
+						continue;//如果有错返回数据重新开始监听
+					}*/
 				}
 				//Servers.close();
 			}catch(IOException | ClassNotFoundException e) {
