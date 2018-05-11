@@ -25,8 +25,8 @@ public class Cchatthread extends Thread {
 			my = 3;
 		}
 		this.portnum = port;
-		this.portnum_in = port + 1000;
-		this.portnum_out = port + 1100;
+		this.portnum_in = port + 1100;
+		this.portnum_out = port + 1000;
 		this.flag = f;
 		this.USER = u;
 	}
@@ -46,10 +46,11 @@ public class Cchatthread extends Thread {
 					String Time = fromclient.get("time");
 					String User = fromclient.get("user");
 					String Conv = fromclient.get("conv");
-					System.out.println(Time + "-" + User + ":" + Conv);
+					System.out.println("In:" + Time + "-" + User + ":" + Conv);
 				}
 				else if(Prelude.equals(Appoint_Prelude.V_C_chatcut)){
 					Servers.close();
+					Client04.state[my] = 0;
 					break;
 				}
 				}
@@ -68,18 +69,18 @@ public class Cchatthread extends Thread {
 						break;
 					}
 					HashMap<String , String> toclient = new HashMap<String , String>();
-						toclient.put("Prelude", Appoint_Prelude.C_V_chat);
+						toclient.put("Prelude", Appoint_Prelude.C_V_chat);//断开后信息也是从此发出给服务器
 						Calendar c = Calendar.getInstance(); 
 						int month = c.get(Calendar.MONTH);   
 						int date = c.get(Calendar.DATE);    
 						int hour = c.get(Calendar.HOUR_OF_DAY);
 						int minute = c.get(Calendar.MINUTE);
-						String time = month + "-" + date + "-" + hour + "-" +minute;
+						String time = month + "月" + date + "日" + hour + "时" + minute + "分";
 						toclient.put("time", time);
 						toclient.put("user", USER);
-						toclient.put("conv", "xxxxx");
+						toclient.put("conv", "我是萝莉控");
 						oos.writeObject(toclient);
-						Thread.sleep(1);
+						Thread.sleep(1000);
 				}
 				
 			}catch(IOException | InterruptedException e) {

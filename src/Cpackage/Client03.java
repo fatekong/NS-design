@@ -6,8 +6,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
-public class Client04 {
-	static final int myport = 10011;
+public class Client03 {
+	static final int myport = 10010;
 	static final String chatV_IP = "127.0.0.1";
 	public static final String My_IP = "127.0.0.1";
 	static final String MyName = "Ìð½´";

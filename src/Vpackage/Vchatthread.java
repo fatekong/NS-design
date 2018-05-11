@@ -3,8 +3,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Vector;
 
-import Cpackage.Client04;
-
 import java.io.*;
 import java.net.*;
 public class Vchatthread extends Thread{
@@ -48,6 +46,7 @@ public class Vchatthread extends Thread{
 					String Time = fromclient.get("time");
 					String User = fromclient.get("user");
 					String Conv = fromclient.get("conv");
+					System.out.println("V:"+Conv);
 					ChatInfor ci = new ChatInfor();
 					ci.SetConv(Conv);
 					ci.SetTime(Time);
@@ -82,7 +81,7 @@ public class Vchatthread extends Thread{
 						break;
 					}
 					while(chatV.state[my] == 1 && chatV.pre[my] == chatV.queue.size()) {
-						Thread.sleep(1);
+						Thread.sleep(1000);
 					}
 					HashMap<String , String> toclient = new HashMap<String , String>();
 					for(int i = chatV.pre[my] ; i < chatV.queue.size() ; i ++) {
@@ -91,11 +90,11 @@ public class Vchatthread extends Thread{
 						toclient.put("time", chatV.queue.get(i).GetTime());
 						toclient.put("user", chatV.queue.get(i).GetUser());
 						toclient.put("conv", chatV.queue.get(i).GetConv());
+						System.out.println(chatV.queue.get(i).GetConv());
 						oos.writeObject(toclient);
-						Thread.sleep(1);
+						Thread.sleep(1000);
 					}
 				}
-				
 			}catch(IOException | InterruptedException e) {
 				System.out.println("´íÎó");
 			}

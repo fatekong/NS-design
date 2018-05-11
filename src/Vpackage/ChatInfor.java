@@ -20,6 +20,6 @@ public class ChatInfor {
 		this.user = u;
 	}
 	public void SetConv(String c) {
-		this.user = c;
+		this.conversation = c;
 	}
 }
