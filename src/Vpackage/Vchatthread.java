@@ -43,15 +43,18 @@ public class Vchatthread extends Thread{
 				String Prelude = fromclient.get("Prelude");
 				System.out.println("Prelude:"+Prelude);
 				if(Prelude.equals(Appoint_Prelude.C_V_chat)) {
-					String Time = fromclient.get("time");
-					String User = fromclient.get("user");
-					String Conv = fromclient.get("conv");
-					System.out.println("V:"+Conv);
-					ChatInfor ci = new ChatInfor();
-					ci.SetConv(Conv);
-					ci.SetTime(Time);
-					ci.SetUser(User);
-					chatV.queue.add(ci);
+					synchronized(chatV.queue) {
+						String Time = fromclient.get("time");
+						String User = fromclient.get("user");
+						String Conv = fromclient.get("conv");
+						System.out.println("V:"+Conv + " size: " + chatV.queue.size());
+						ChatInfor ci = new ChatInfor();
+						ci.SetConv(Conv);
+						ci.SetTime(Time);
+						ci.SetUser(User);
+						chatV.queue.add(ci);
+						Thread.sleep(2000);
+					}
 				}
 				else if(Prelude.equals(Appoint_Prelude.C_V_chatcut)){
 					if(portnum == 10008)
@@ -66,7 +69,7 @@ public class Vchatthread extends Thread{
 					break;
 				}
 				}
-			}catch(IOException | ClassNotFoundException e) {
+			}catch(IOException | ClassNotFoundException | InterruptedException e) {
 				System.out.println("´íÎó");
 			}
 		}
@@ -84,15 +87,19 @@ public class Vchatthread extends Thread{
 						Thread.sleep(1000);
 					}
 					HashMap<String , String> toclient = new HashMap<String , String>();
+					System.out.println(portnum+":"+chatV.pre[my]);
 					for(int i = chatV.pre[my] ; i < chatV.queue.size() ; i ++) {
-						chatV.pre[my]++;
-						toclient.put("Prelude", Appoint_Prelude.V_C_chat);
-						toclient.put("time", chatV.queue.get(i).GetTime());
-						toclient.put("user", chatV.queue.get(i).GetUser());
-						toclient.put("conv", chatV.queue.get(i).GetConv());
-						System.out.println(chatV.queue.get(i).GetConv());
-						oos.writeObject(toclient);
-						Thread.sleep(1000);
+						synchronized(chatV.queue) {
+							chatV.pre[my]++;
+							System.out.println(portnum + " "+chatV.pre[my] + " "+i);
+							toclient.put("Prelude", Appoint_Prelude.V_C_chat);
+							toclient.put("time", chatV.queue.get(i).GetTime());
+							toclient.put("user", chatV.queue.get(i).GetUser());
+							toclient.put("conv", chatV.queue.get(i).GetConv());
+							System.out.println(portnum+":"+chatV.queue.get(i).GetConv());
+							oos.writeObject(toclient);
+							Thread.sleep(1000);
+						}
 					}
 				}
 			}catch(IOException | InterruptedException e) {

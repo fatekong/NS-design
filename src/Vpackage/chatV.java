@@ -8,6 +8,7 @@ class chatVThread extends Thread{
 	public static final String SERVER_IP = "127.0.0.1";
 	static final Vector<ChatInfor> queue = new Vector<ChatInfor>();
 	static final chatV c = new chatV();
+	
 	private static int[] pre = {0,0,0,0};
 	int portnum;
 	public chatVThread(int num) {
@@ -29,7 +30,7 @@ class chatVThread extends Thread{
 			@SuppressWarnings("unchecked")
 			HashMap<String,String> fromclient = (HashMap<String,String>)ois.readObject();
 			String prelude = fromclient.get("Prelude");
-			System.out.println("C04:"+prelude);
+			System.out.println("C:"+prelude);
 			if(prelude.equals(Appoint_Prelude.C_V)) {
 				if(portnum == 10008)
 					chatV.state[0] = 1;
