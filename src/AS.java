@@ -68,7 +68,7 @@ class ASThread extends Thread{
 					toclient.put("error", "超时");
 					oos.writeObject(toclient);
 				}
-				if()//检查首部中的各项数据
+				if(true)//检查首部中的各项数据
 				{
 					toclient.put("Prelude", "AS_C");
 					toclient.put("error", "首部出错");

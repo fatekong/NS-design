@@ -1,4 +1,4 @@
-package ASpackage;
+package FTPpackage;
 
 public class Appoint_Prelude {
 	//ÑéÖ¤½×¶Î

@@ -45,8 +45,9 @@ public class Cchatthread extends Thread {
 						Appoint_Client.state[my] = 0;
 						break;
 					}
+					Thread.sleep(1000);
 				}
-			} catch (IOException | ClassNotFoundException e) {
+			} catch (IOException | ClassNotFoundException | InterruptedException e) {
 				System.out.println("错误");
 			}
 		} else if (flag.equals("out")) {
@@ -54,6 +55,7 @@ public class Cchatthread extends Thread {
 				Socket socket = new Socket(Client04.chatV_IP, portnum_out);
 				OutputStream out = socket.getOutputStream();
 				ObjectOutputStream oos = new ObjectOutputStream(out);
+				int i = 0;
 				while (true) {
 					if (Appoint_Client.state[my] == 0) {
 						socket.close();
@@ -71,11 +73,12 @@ public class Cchatthread extends Thread {
 					toclient.put("time", time);
 					toclient.put("user", USER);
 					if (my == 3)
-						toclient.put("conv", "我是萝莉控");
+						toclient.put("conv", "我是萝莉控"+i);
 					else if (my == 2)
-						toclient.put("conv", "狗一样的男人");
+						toclient.put("conv", "狗一样的男人"+i);
 					oos.writeObject(toclient);
 					Thread.sleep(3000);
+					i++;
 				}
 
 			} catch (IOException | InterruptedException e) {

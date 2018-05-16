@@ -44,7 +44,7 @@ public class Vchatthread extends Thread {
 						@SuppressWarnings("unchecked")
 						HashMap<String, String> fromclient = (HashMap<String, String>) ois.readObject();
 						String Prelude = fromclient.get("Prelude");
-						System.out.println("Prelude:" + Prelude);
+						//System.out.println("Prelude:" + Prelude);
 						if (Prelude.equals(Appoint_Prelude.C_V_chat)) {
 							synchronized (chatV.queue) {
 								String Time = fromclient.get("time");
@@ -72,9 +72,9 @@ public class Vchatthread extends Thread {
 							break;
 						}
 					}
-					System.out.println("closed");
+					//System.out.println("closed");
 				} catch (IOException | ClassNotFoundException | InterruptedException e) {
-					System.out.println("´íÎóin");
+					//System.out.println("´íÎóin");
 					try {
 						Serv.close();
 						Sock.close();
@@ -85,7 +85,7 @@ public class Vchatthread extends Thread {
 					chatV.exit[my] = false;
 				}
 			}
-			System.out.println("in->out");
+			//System.out.println("in->out");
 			Thread.interrupted();
 		} else if (flag.equals("out")) {
 			while (chatV.exit[my]) {
@@ -101,23 +101,25 @@ public class Vchatthread extends Thread {
 						while (chatV.state[my] == 1 && chatV.pre[my] == chatV.queue.size()) {
 							Thread.sleep(1000);
 						}
-						HashMap<String, String> toclient = new HashMap<String, String>();
+						
 						System.out.println(portnum + ":" + chatV.pre[my]);
 						for (int i = chatV.pre[my]; i < chatV.queue.size(); i++) {
 							synchronized (chatV.queue) {
+								HashMap<String, String> toclient = new HashMap<String, String>();
 								chatV.pre[my]++;
-								System.out.println(portnum + " " + chatV.pre[my] + " " + i);
+								//System.out.println(portnum + " " + chatV.pre[my] + " " + i);
 								toclient.put("Prelude", Appoint_Prelude.V_C_chat);
 								toclient.put("time", chatV.queue.get(i).GetTime());
 								toclient.put("user", chatV.queue.get(i).GetUser());
 								toclient.put("conv", chatV.queue.get(i).GetConv());
 								System.out.println(portnum + ":" + chatV.queue.get(i).GetConv());
 								oos.writeObject(toclient);
-								System.out.println("1111");
+								//System.out.println("1111");
 								Thread.sleep(1000);
+								System.out.println("------------------------");
 							}
 						}
-						System.out.println("222");
+						//System.out.println("222");
 					}
 					// socket.close();
 				} catch (IOException | InterruptedException e) {
@@ -125,9 +127,9 @@ public class Vchatthread extends Thread {
 					chatV.exit[my] = false;
 				}
 			}
-			System.out.println("out->out");
+			//System.out.println("out->out");
 			Thread.interrupted();
 		}
-		System.out.println("over...");
+		//System.out.println("over...");
 	}
 }

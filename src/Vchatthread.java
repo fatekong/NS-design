@@ -35,10 +35,6 @@ public class Vchatthread extends Thread{
 				Socket Sockets = Servers.accept();
 				InputStream in =Sockets.getInputStream();
 				ObjectInputStream ois =new ObjectInputStream(in);
-<<<<<<< HEAD:src/Vchatthread.java
-=======
-				//@SuppressWarnings("unchecked");
->>>>>>> TCW:src/chatthread.java
 				while(true) {
 				@SuppressWarnings("unchecked")
 				HashMap<String,String> fromclient = (HashMap<String,String>)ois.readObject();

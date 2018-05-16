@@ -69,11 +69,6 @@ class TGSThread extends Thread{
 				unpacked(fromclient);
 
 				Calendar c = Calendar.getInstance(); 
-<<<<<<< HEAD
-				
-				//添加了两点注释
-=======
->>>>>>> TCW
 				int month = c.get(Calendar.MONTH);
 				int date = c.get(Calendar.DATE);
 				int hour = c.get(Calendar.HOUR_OF_DAY);

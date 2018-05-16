@@ -8,12 +8,8 @@ import java.util.Vector;
 
 class chatVThread extends Thread {
 	public static final String SERVER_IP = "127.0.0.1";
-	static final Vector<ChatInfor> queue = new Vector<ChatInfor>();
-	static final chatV c = new chatV();
-	private static int[] pre = { 0, 0, 0, 0 };
 	int portnum;
 	int client_num;
-
 	public chatVThread(int num) {
 		portnum = num;
 	}
