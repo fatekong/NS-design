@@ -20,13 +20,23 @@ public class VFTPthread extends Thread {
 	int portnum;
 	int portnum_in;
 	int portnum_out;
+	ServerSocket Servers;
+	Socket Sockets;
 	String model = "";// upload是上传，download是下载
-
+	int my ;
 	public VFTPthread(String m, int port) {
 		this.portnum = port;
 		this.model = m;
 		this.portnum_in = port + 1000;
 		this.portnum_out = port + 1100;
+		if(port == 10012)
+			my = 0;
+		else if(port == 10013)
+			my = 1;
+		else if(port == 10014)
+			my = 2;
+		else if(port == 10015)
+			my = 3;
 	}
 
 	@SuppressWarnings({ "unchecked", "resource" })
@@ -34,8 +44,8 @@ public class VFTPthread extends Thread {
 		if(model.equals("download")) {
 			try {
 				String filepath = FTP.FilePath;
-				ServerSocket Servers = new ServerSocket(portnum_in);
-				Socket Sockets = Servers.accept();
+				Servers = new ServerSocket(portnum_in);
+				Sockets = Servers.accept();
 				InputStream is = Sockets.getInputStream();
 				ObjectInputStream ois = new ObjectInputStream(is);
 				HashMap<String,String> formclient = (HashMap<String, String>) ois.readObject();
@@ -43,6 +53,9 @@ public class VFTPthread extends Thread {
 				String filename = "";
 				if(Prelude.equals(Appoint_Prelude.C_V_ftp_name)) {
 					filename = formclient.get("FileName");
+					filename = my + "_" +filename;
+					DES des = new DES();
+					filename = des.decode(filename, FTP.kcv[my]);
 					File file = new File(filepath + File.separatorChar + filename);
 					HashMap<String, String> toclient = new HashMap<String, String>();
 					toclient.put("Prelude", Appoint_Prelude.V_C_ftp_upload);
@@ -59,19 +72,34 @@ public class VFTPthread extends Thread {
 						formclient = (HashMap<String, String>) ois.readObject();
 						HashMap<String, String> Toclient = new HashMap<String, String>();
 						System.out.println("等待。。。"+formclient.get("Prelude") + "||" + formclient.get("Flag"));
+						//if(formclient.get("Prelude").equals(Appoint_Prelude.C_V_ftp_file))
+							//System.out.println("Prelude没问题" + formclient.get("Prelude") + "," + Appoint_Prelude.C_V_ftp_file);
+						//if(formclient.get("Flag").equals("continue"))
+							//System.out.println("Flag没问题");
 						if(formclient.get("Prelude").equals(Appoint_Prelude.C_V_ftp_file) && formclient.get("Flag").equals("continue")) {
 							Toclient.put("Prelude", Appoint_Prelude.V_C_ftp_file);
 							System.out.println("recv file...");
 							length = dis.read(bytes);
-							fos.write(bytes, 0, length);  
+							
+							/*String frombytes = new String(bytes);
+							frombytes = des.decode(frombytes, FTP.kcv[my]);
+							System.out.println(frombytes);
+							System.out.println( "*******************************");
+							bytes = frombytes.getBytes();
+							length = bytes.length;*/
+							
+							fos.write(bytes, 0, length);
 							oos.writeObject(Toclient);
 		                    fos.flush();
+		                    
 						}
 						else if(formclient.get("Prelude").equals(Appoint_Prelude.C_V_ftp_file) && formclient.get("Flag").equals("over")) {
+							System.out.println("结束");
 							formclient.clear();
 							break;
 						}
 						else {
+							System.out.println("验证错误");
 							Toclient.put("Prelude", Appoint_Prelude.V_C_ftp_upload);
 							oos.writeObject(Toclient);
 						}
@@ -79,17 +107,28 @@ public class VFTPthread extends Thread {
 					}
 					fos.flush();
 					fos.close();
+					Servers.close();
+					Sockets.close();
+					System.out.println("结束");
 				}
 			} catch (IOException | ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				try {
+					Servers.close();
+					Sockets.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
 			}
 		}
 		else if(model.equals("upload")) {
 			try {
 				String filepath = FTP.FilePath;
-				ServerSocket Servers = new ServerSocket(portnum_out);
-				Socket Sockets = Servers.accept();
+				Servers = new ServerSocket(portnum_out);
+				Sockets = Servers.accept();
 				InputStream is = Sockets.getInputStream();
 				ObjectInputStream ois = new ObjectInputStream(is);
 				HashMap<String,String> fromclient = (HashMap<String, String>) ois.readObject();
@@ -119,7 +158,7 @@ public class VFTPthread extends Thread {
 		                while(true) {	
 		                	System.out.println("ois.readObject()");
 		                	HashMap<String,String> Toclient = new HashMap<String,String>();
-		                	if(fromclient.get("Prelude").equals(Appoint_Prelude.V_C_ftp_file) || sign == 0) {
+		                	if(fromclient.get("Prelude").equals(Appoint_Prelude.C_V_ftp_file) || sign == 0) {
 		                		int read = 0;
 		                		read = dis.read(bytes);
 		                		if(read == -1) {
@@ -154,6 +193,13 @@ public class VFTPthread extends Thread {
 			} catch (IOException | ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				try {
+					Servers.close();
+					Sockets.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		}
 }}

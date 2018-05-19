@@ -36,9 +36,27 @@ public class Cchatthread extends Thread {
 					String Prelude = fromclient.get("Prelude");
 					System.out.println("Prelude:" + Prelude);
 					if (Prelude.equals(Appoint_Prelude.V_C_chat)) {
-						String Time = fromclient.get("time");
-						String User = fromclient.get("user");
-						String Conv = fromclient.get("conv");
+						String Time_beforeDES = fromclient.get("time");
+						String User_beforeDES = fromclient.get("user");
+						String Conv_beforeDES = fromclient.get("conv");
+						DES des =new DES();
+						String Time = "";
+						String User = "";
+						String Conv = "";
+						if(my == 0) {
+							Time = des.decode(Time_beforeDES, Client01.kcv);
+							User = des.decode(User_beforeDES, Client01.kcv);
+							Conv = des.decode(Conv_beforeDES, Client01.kcv);
+						}
+						else if(my == 1) {
+							
+						}
+						else if(my == 2) {
+							
+						}
+						else if(my == 3) {
+							
+						}
 						System.out.println("In:" + Time + "-" + User + ":" + Conv);
 					} else if (Prelude.equals(Appoint_Prelude.V_C_chatcut)) {
 						Servers.close();
@@ -70,14 +88,44 @@ public class Cchatthread extends Thread {
 					int hour = c.get(Calendar.HOUR_OF_DAY);
 					int minute = c.get(Calendar.MINUTE);
 					String time = month + "月" + date + "日" + hour + "时" + minute + "分";
-					toclient.put("time", time);
-					toclient.put("user", USER);
-					if (my == 3)
-						toclient.put("conv", "我是萝莉控"+i);
-					else if (my == 2)
-						toclient.put("conv", "狗一样的男人"+i);
+					String CONV = "";
+					String user = "";
+					String Time = "";
+					String Hash = "";
+					String Sect = "";
+					DES des = new DES();
+					MyHash myHash = new MyHash();
+					if(my == 0) {
+						Time = des.encode(time, Client01.kcv);
+						user = des.encode(USER, Client01.kcv);
+						CONV = des.encode("high啊", Client01.kcv);
+						Transfer transfer = new Transfer(Client01.N);
+						Sect = transfer.TransToSec(Client01.MyID, Client01.D);
+						Sect = des.encode(Sect, Client01.kcv);
+						Hash = myHash.MD5(Client01.MyID);
+					}
+					/*else if (my == 3) {
+						des.encode(time, Client04.kcv);
+						des.encode(USER, Client04.kcv);
+						CONV = des.encode("我是萝莉控", Client04.kcv);
+					}
+					else if (my == 2) {
+						des.encode(time, Client03.kcv);
+						des.encode(USER, Client03.kcv);
+						CONV = des.encode("狗一样的男人", Client03.kcv);
+					}
+					else if (my == 1) {
+						des.encode(time, Client02.kcv);
+						des.encode(USER, Client02.kcv);
+						CONV = des.encode("地大杜兰特", Client02.kcv);
+					}*/
+					toclient.put("time", Time);
+					toclient.put("user", user);
+					toclient.put("conv", CONV);		
+					toclient.put("sect", Sect);
+					toclient.put("hash", Hash);
 					oos.writeObject(toclient);
-					Thread.sleep(3000);
+					Thread.sleep(2000);
 					i++;
 				}
 

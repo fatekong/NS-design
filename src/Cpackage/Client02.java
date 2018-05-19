@@ -11,10 +11,22 @@ public class Client02 {
 	static final int TGSport = 10005;
 	static final int chatVport = 10009;
 	static final int FTPport = 10013;
+	static final int my = 0;
+	static final String MyName = "∂≈¿ºÃÿ";
 	private static final String AS_IP = "127.0.0.1";
 	private static final String TGS_IP = "";
 	private static final String FTP_IP = "127.0.0.1";
 	private static final String ChatV_IP = "";
+	private String IDv = "chatV";
+	private String IDtgs = "TGS";
+	private String ADc = "china";
+	private String MyID = "C1";
+	private String kctgs = "asvcwasd";
+	private String ktgs = "bbbbbbbb";
+	static String kcv = "";
+	private String TS4 = "";
+	private String TS5 = "";
+	private String Ticketv = "";
 	static final String filepath = "D:\\TestforNS-design\\NS.txt";
 	@SuppressWarnings("unchecked")
 	public static void main(String args[]) throws ClassNotFoundException {

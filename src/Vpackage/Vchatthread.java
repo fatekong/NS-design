@@ -3,6 +3,7 @@ package Vpackage;
 import java.util.HashMap;
 import java.io.*;
 import java.net.*;
+import java.math.BigInteger;
 
 public class Vchatthread extends Thread {
 	public static final String SERVER_IP = "127.0.0.1";
@@ -47,16 +48,32 @@ public class Vchatthread extends Thread {
 						//System.out.println("Prelude:" + Prelude);
 						if (Prelude.equals(Appoint_Prelude.C_V_chat)) {
 							synchronized (chatV.queue) {
-								String Time = fromclient.get("time");
-								String User = fromclient.get("user");
-								String Conv = fromclient.get("conv");
-								System.out.println("V:" + Conv + " size: " + chatV.queue.size());
+								String Time_beforeDES = fromclient.get("time");
+								String User_beforeDES = fromclient.get("user");
+								String Conv_beforeDES = fromclient.get("conv");
+								String Sect_beforeDES = fromclient.get("sect");
+								String Hash = fromclient.get("hash");
+								DES des =new DES();
+								MyHash mh = new MyHash();
+								Transfer transfer = new Transfer(new BigInteger(chatV.RSA_N[my]));
+								
+								String Time = des.decode(Time_beforeDES, chatV.kcv[my]);
+								String User = des.decode(User_beforeDES, chatV.kcv[my]);
+								String Conv = des.decode(Conv_beforeDES, chatV.kcv[my]);
+								String Sect = des.decode(Sect_beforeDES, chatV.kcv[my]);
+								Sect = transfer.TransToMes(Sect, new BigInteger(chatV.RSA_E[my]));
+								if(mh.MD5(Sect).equals(Hash))
+									System.out.println("数字签名验证通过");
+								
+								
+								
+								System.out.println("V:" + Time + "-" + User + ":" + Conv + " size: " + chatV.queue.size());
 								ChatInfor ci = new ChatInfor();
 								ci.SetConv(Conv);
 								ci.SetTime(Time);
 								ci.SetUser(User);
 								chatV.queue.add(ci);
-								Thread.sleep(2000);
+								Thread.sleep(1000);
 							}
 						} else if (Prelude.equals(Appoint_Prelude.C_V_chatcut)) {
 							if (portnum == 10008)
@@ -103,15 +120,16 @@ public class Vchatthread extends Thread {
 						}
 						
 						System.out.println(portnum + ":" + chatV.pre[my]);
+						DES des = new DES();
 						for (int i = chatV.pre[my]; i < chatV.queue.size(); i++) {
 							synchronized (chatV.queue) {
 								HashMap<String, String> toclient = new HashMap<String, String>();
 								chatV.pre[my]++;
 								//System.out.println(portnum + " " + chatV.pre[my] + " " + i);
 								toclient.put("Prelude", Appoint_Prelude.V_C_chat);
-								toclient.put("time", chatV.queue.get(i).GetTime());
-								toclient.put("user", chatV.queue.get(i).GetUser());
-								toclient.put("conv", chatV.queue.get(i).GetConv());
+								toclient.put("time", des.encode(chatV.queue.get(i).GetTime(), chatV.kcv[my]));
+								toclient.put("user", des.encode(chatV.queue.get(i).GetUser(), chatV.kcv[my]));
+								toclient.put("conv", des.encode(chatV.queue.get(i).GetConv(), chatV.kcv[my]));
 								System.out.println(portnum + ":" + chatV.queue.get(i).GetConv());
 								oos.writeObject(toclient);
 								//System.out.println("1111");

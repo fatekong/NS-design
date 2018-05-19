@@ -61,7 +61,7 @@ public class DES {
                     2, 7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8, 2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3,
                     5, 6, 11 } };
     
-    public static String Main_key()//生成了密钥
+    public String Main_key()//生成了密钥
     {
     		String key="";
     		int element = 0;
@@ -69,12 +69,15 @@ public class DES {
     		for(int i = 0 ; i < 8 ; i++) {
     			element = Math.abs(random.nextInt())%95+32;
 //    			System.out.println(element +"," +(char)element);
-    			key += (char)element;
+    			if((char)element!='-') 
+    				key += (char)element;
+    			else
+    				i--;
     		}
     		return key;
     }
     
-    static String encode(String plaintext,String key)
+    String encode(String plaintext,String key)
     {
 
         String plaintext_fake="";
@@ -122,7 +125,7 @@ public class DES {
         return ciphertext;
     }
     
-    public static String decode(String ciphertext,String key)
+    public String decode(String ciphertext,String key)
     {
     		DES des = new DES();
 
@@ -154,11 +157,14 @@ public class DES {
           temp_of_temp="";
           flag=0;
         }
-        System.out.println("解密：" + ciphertext_new);
-        return ciphertext_new.toString();
+        //System.out.println("解密：" + ciphertext_new);
+        String mydecode = ciphertext_new.toString();
+        mydecode = mydecode.trim();
+        System.out.println("解密：" + mydecode);
+        return mydecode;
     }
     
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         String plaintext = "曌:对我就是狗";
         String ciphertext="";
         String plaintext_after;
@@ -169,7 +175,7 @@ public class DES {
         System.out.println("********************************");
         plaintext_after=decode(ciphertext,key);//解密（输入密文，key）
 		
-    }
+    }*/
 
     
     

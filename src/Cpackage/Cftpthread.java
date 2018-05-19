@@ -18,6 +18,7 @@ import java.util.HashMap;
 
 public class Cftpthread extends Thread {
 	int portnum;
+	int my;
 	String ftp_IP = "127.0.0.1";
 	String model = "";// upload是上传，download是下载
 	int portnum_in;
@@ -28,6 +29,14 @@ public class Cftpthread extends Thread {
 		this.model = m;
 		this.portnum_in = port + 1100;
 		this.portnum_out = port + 1000;
+		if(port == 10012)
+			my = 0;
+		else if(port == 10013)
+			my = 1;
+		else if(port == 10014)
+			my = 2;
+		else if(port == 10015)
+			my = 3;
 	}
 
 	@SuppressWarnings({ "unchecked", "resource" })
@@ -38,7 +47,17 @@ public class Cftpthread extends Thread {
 				Socket socket = new Socket(ftp_IP, portnum_out);
 				HashMap<String, String> ToFTP = new HashMap<String, String>();
 				ToFTP.put("Prelude", Appoint_Prelude.C_V_ftp_name);
-				ToFTP.put("FileName", "NS.txt");
+				DES des = new DES();
+				String FileName = "";
+				if(my == 0) 
+					FileName = des.encode("NS.txt", Client01.kcv);
+				/*else if(my == 1)
+					FileName = des.encode("NS.txt", Client02.kcv);
+				else if(my == 2)
+					FileName = des.encode("NS.txt", Client03.kcv);
+				else if(my == 3)
+					FileName = des.encode("NS.txt", Client04.kcv);*/
+				ToFTP.put("FileName", FileName);
 				OutputStream os = socket.getOutputStream();
 				ObjectOutputStream oos = new ObjectOutputStream(os);
 				oos.writeObject(ToFTP);
@@ -49,6 +68,7 @@ public class Cftpthread extends Thread {
 				String ftp_Prelude = FromFTP.get("Prelude");
 				if(ftp_Prelude.equals(Appoint_Prelude.V_C_ftp_upload)) {
 					byte[] bytes = new byte[1024];
+					
 	                DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(filepath)));
 	                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 	                ToFTP.clear();
@@ -60,6 +80,20 @@ public class Cftpthread extends Thread {
 	                	if(FromFTP.get("Prelude").equals(Appoint_Prelude.V_C_ftp_file)) {
 	                		int read = 0;
 	                		read = dis.read(bytes);
+	                		
+	                		/*String frombytes =  new String(bytes);
+	    					if(my == 0) 
+	    						frombytes = des.encode(frombytes, Client01.kcv);
+	    					/*else if(my == 1)
+	    						frombytes = des.encode(frombytes, Client02.kcv);
+	    					else if(my == 2)
+	    						frombytes = des.encode(frombytes, Client03.kcv);
+	    					else if(my == 3)
+	    						frombytes = des.encode(frombytes, Client04.kcv);
+	    					bytes = frombytes.getBytes();
+	    					System.out.println(frombytes);
+	    					System.out.println("*******************************************");*/
+	                		
 	                		if(read == -1) {
 	                			System.out.println("over");
 		                		toFTP.put("Prelude", Appoint_Prelude.C_V_ftp_file);

@@ -28,7 +28,7 @@ public class Appoint_Prelude {
 	//文件上传阶段
 	//static final String C_V_ftp_name = "001101100000";//C->V C向V发送要获取的文件名称
 	static final String V_C_ftp_upload = "110001100000";//V->C V收到C要上传的文件名称
-	static final String C_V_ftp_file = "110001110000";//C->V C向V发送文件流|C收到V的文件流
+	static final String C_V_ftp_file = "001101110000";//C->V C向V发送文件流|C收到V的文件流
 	static final String C_V_ftpcut = "001111000000";//C->V 端来文件连接
 	static final String V_C_ftpcut = "110011000000";//V->C 端来文件连接
 	//文件错误信息，暂时保留先
