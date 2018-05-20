@@ -1,4 +1,3 @@
-package Cpackage;
 
 
 import java.util.Random;

@@ -1,5 +1,4 @@
-package Cpackage;
-
+/*
 import java.net.*;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,9 +6,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.*;
-
-
-import java.math.BigInteger;
 
 public class Client01 {
 	static final int ASport = 10000;
@@ -23,51 +19,51 @@ public class Client01 {
 	public static final String chatV_IP = "127.0.0.1";
 	public static final String FTP_IP = "127.0.0.1";
 	public static final String My_IP = "127.0.0.1";
-	//private String IDv = "chatV";//FTP or chatV
-	private String IDv = "FTP";
+	private String IDv = "chatV";
 	private String IDtgs = "TGS";
 	private String ADc = "china";
-	public static String MyID = "C1";
+	private String MyID = "C1";
 	private String kctgs = "asvcwasd";
 	private String ktgs = "bbbbbbbb";
+	private String kcv = "";
 	private String kc = "12345678";
-	static String kcv = "";
 	private String TS2 = "";
 	private String TS4 = "";
 	private String TS5 = "";
 	private String Ticketv = "";
-	private String Tickettgs = "";
-	public static BigInteger E ;
-	public static BigInteger D ;
-	public static BigInteger N ;
+	private String ticket_to_tgs="";
 
-	//给AS发送的包
-	public HashMap<String, String> ToAS() {
-		HashMap<String, String> toas = new HashMap<String, String>();
-		DES des = new DES();
-		Calendar c = Calendar.getInstance();
-		int month = c.get(Calendar.MONTH);
-		int date = c.get(Calendar.DATE);
-		int hour = c.get(Calendar.HOUR_OF_DAY);
-		int minute = c.get(Calendar.MINUTE);
-		String TS1 = month + "." + date + "." + hour + "." + minute;// 封包
-		//String LifeTime = "2";
-		//String Ticket_beforeDES = kctgs + "-" + MyID + "-" + ADc + "-" + IDtgs + "-" + TS2 + "-" + LifeTime;
-		//String Authenticator_beforeDES = MyID + "-" + ADc + "-" + TS1;
-		//String Ticket = des.encode(Ticket_beforeDES, ktgs);
-		//String Authenticator = des.encode(Authenticator_beforeDES, kctgs);
-		toas.put("Prelude", Appoint_Prelude.C_AS);//首部
-		toas.put("IDc", MyID);
-		toas.put("TS1", TS1);
-		//totgs.put("Ticket", Ticket);
-		//totgs.put("Authenticator", Authenticator);
-		return toas;
-	}
+	
+	// 给AS发送的包
+	
+		public HashMap<String, String> ToAS() {
+			HashMap<String, String> toas = new HashMap<String, String>();
+			DES des = new DES();
+			Calendar c = Calendar.getInstance();
+			int month = c.get(Calendar.MONTH);
+			int date = c.get(Calendar.DATE);
+			int hour = c.get(Calendar.HOUR_OF_DAY);
+			int minute = c.get(Calendar.MINUTE);
+			String TS1 = month + "." + date + "." + hour + "." + minute;// 封包
+			//String LifeTime = "2";
+			//String Ticket_beforeDES = kctgs + "-" + MyID + "-" + ADc + "-" + IDtgs + "-" + TS2 + "-" + LifeTime;
+			//String Authenticator_beforeDES = MyID + "-" + ADc + "-" + TS1;
+			//String Ticket = des.encode(Ticket_beforeDES, ktgs);
+			//String Authenticator = des.encode(Authenticator_beforeDES, kctgs);
+			toas.put("Prelude", Appoint_Prelude.C_AS);//首部
+			toas.put("IDc", MyID);
+			toas.put("TS1", TS1);
+			//totgs.put("Ticket", Ticket);
+			//totgs.put("Authenticator", Authenticator);
+			return toas;
+		}
+		
+	
 	// 给TGS发送的包
 	public HashMap<String, String> ToTGS() {
 		HashMap<String, String> totgs = new HashMap<String, String>();
 		DES des = new DES();
-		/*Calendar c = Calendar.getInstance();
+		Calendar c = Calendar.getInstance();
 		int month = c.get(Calendar.MONTH);
 		int date = c.get(Calendar.DATE);
 		int hour = c.get(Calendar.HOUR_OF_DAY);
@@ -75,18 +71,17 @@ public class Client01 {
 		String TS2 = month + "." + date + "." + hour + "." + minute;// 封包
 		String LifeTime = "2";
 		String Ticket_beforeDES = kctgs + "-" + MyID + "-" + ADc + "-" + IDtgs + "-" + TS2 + "-" + LifeTime;
-		
-		String Ticket = des.encode(Ticket_beforeDES, ktgs);*/
-		
 		String Authenticator_beforeDES = MyID + "-" + ADc + "-" + TS2;
+		String Ticket = des.encode(Ticket_beforeDES, ktgs);
 		String Authenticator = des.encode(Authenticator_beforeDES, kctgs);
 		totgs.put("Prelude", Appoint_Prelude.C_TGS);
 		totgs.put("IDv", IDv);
-		totgs.put("Ticket", Tickettgs);
+		totgs.put("Ticket", Ticket);
 		totgs.put("Authenticator", Authenticator);
 		return totgs;
 	}
-	//获取AS发过来的信息
+
+	
 	public void FormAS(HashMap<String, String> fromtgs) {
 		// 先从hashmap中得到未解密的数据
 		String kctgs_beforeDES = fromtgs.get("des_kctgs");
@@ -104,11 +99,8 @@ public class Client01 {
 		System.out.println("解密后的IDtgs:" + IDtgs);
 		TS2 = des.decode(TS2_beforeDES, kc);
 		System.out.println("解密后的TS2:" + TS2);
-		
-		Tickettgs = des.decode_pro(tct_beforeDES, kc);
-		System.out.println("解密后的Ticket：" + Tickettgs);
+		ticket_to_tgs = tct_beforeDES;
 	}
-
 	// 获取TGS发过来的信息
 	public void FormTGS(HashMap<String, String> fromtgs) {
 		// 先从hashmap中得到未解密的数据
@@ -145,79 +137,54 @@ public class Client01 {
 		String TS5 = month + "." + date + "." + hour + "." + minute;
 		String Authenticator_beforeDES = MyID + "-" + ADc + "-" + TS5;
 		String Authenticator = des.encode(Authenticator_beforeDES, kcv);
-		Prime_Method prime_Method = new Prime_Method();
-		BigInteger p = prime_Method.GetPorQ();
-		BigInteger q = prime_Method.GetPorQ();
-		while(p.equals(q)){
-			q = prime_Method.GetPorQ();
-		}
-		E =prime_Method.GetE(p, q);
-		D = prime_Method.GetD(p, q, E);
-		N = p.multiply(q);
 		tov.put("Prelude", Appoint_Prelude.C_V);
 		tov.put("Ticket", Ticketv);
 		tov.put("Authenticator",Authenticator);
-		tov.put("E", E.toString());
-		tov.put("N", N.toString());
 		return tov;
 	}
 	
-	public boolean FromV(HashMap<String,String> fromv) {
+	public void FromV(HashMap<String,String> fromv) {
 		String TS5_beforeDES = fromv.get("TS5");
 		DES des = new DES();
-		String TS5_1 = des.decode(TS5_beforeDES, kcv);
-		if(!TS5_1.equals(TS5)) {
-			String ts[] = TS5_1.split("\\.");
-			Calendar c = Calendar.getInstance();
-			int month = c.get(Calendar.MONTH);
-			int date = c.get(Calendar.DATE);
-			int hour = c.get(Calendar.HOUR_OF_DAY);
-			int minute = c.get(Calendar.MINUTE);
-			if(month == Integer.parseInt(ts[0]) && date == Integer.parseInt(ts[1])
-					&& hour == Integer.parseInt(ts[2])) {
-				if(Integer.parseInt(ts[3])-minute >= 0) {
-					return true;
-				}
-				else
-					return false;
-			}
-			else
-				return false;
-		}
-		else 
-			return false;
+		TS5 = des.decode(TS5_beforeDES, kcv);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public static void main(String args[]) throws ClassNotFoundException {
 		try {
-			//String V = "chatV";
-			
-			String V = "FTP";
+			String V = "chatV";
 			Client01 c1 = new Client01(V);
-			Socket socket = new Socket(AS_IP,ASport);
+			
+			Socket socket1 = new Socket(AS_IP, ASport);
+			HashMap<String, String> ToAS = new HashMap<String, String>();
+			OutputStream os1 = socket1.getOutputStream();
+			ObjectOutputStream oos1 = new ObjectOutputStream(os1);
+			InputStream is1 = socket1.getInputStream();
+			ObjectInputStream ois1 = new ObjectInputStream(is1);
+			ToAS = c1.ToAS();
+			oos1.writeObject(ToAS);
+			
+			
+			HashMap<String, String> FromAS = (HashMap<String, String>) ois1.readObject();
+			String as_Prelude = FromAS.get("Prelude");
+			while (!as_Prelude.equals(Appoint_Prelude.AS_C)) {
+				oos1.writeObject(ToAS);
+			}
+			c1.FormAS(FromAS);
+			System.out.println("over");
+			socket1.close();
+			
+			
+			
+			
+			
+			
+			Socket socket = new Socket(TGS_IP, TGSport);
+			HashMap<String, String> ToTGS = new HashMap<String, String>();
 			OutputStream os = socket.getOutputStream();
 			ObjectOutputStream oos = new ObjectOutputStream(os);
 			InputStream is = socket.getInputStream();
 			ObjectInputStream ois = new ObjectInputStream(is);
-			
-			HashMap<String,String> ToAS = new HashMap<String,String>();
-			ToAS = c1.ToAS();
-			oos.writeObject(ToAS);
-			HashMap<String,String> FromAS = (HashMap<String,String>)ois.readObject();
-			String as_Prelude = FromAS.get("Prelude");
-			while(!as_Prelude.equals(Appoint_Prelude.AS_C)) {
-				oos.writeObject(ToAS);
-			}
-			c1.FormAS(FromAS);
-			socket.close();
-			
-			socket = new Socket(TGS_IP, TGSport);
-			HashMap<String, String> ToTGS = new HashMap<String, String>();
-			os = socket.getOutputStream();
-			oos = new ObjectOutputStream(os);
-			is = socket.getInputStream();
-			ois = new ObjectInputStream(is);
 			ToTGS = c1.ToTGS();
 			oos.writeObject(ToTGS);
 			HashMap<String, String> FromTGS = (HashMap<String, String>) ois.readObject();
@@ -228,6 +195,7 @@ public class Client01 {
 			c1.FormTGS(FromTGS);
 			//System.out.println("over");
 			socket.close();
+			
 			HashMap<String, String> ToV = new HashMap<String, String>();
 			if(V == "chatV") {
 				socket = new Socket(chatV_IP, chatVport);
@@ -242,14 +210,12 @@ public class Client01 {
 				while(!v_Prelude.equals(Appoint_Prelude.V_C)) {
 					oos.writeObject(ToV);
 				}
-				boolean s = c1.FromV(FromV);
+				c1.FromV(FromV);
 				String V_Prelude = FromV.get("Prelude");
-				System.out.println("s:" + s);
-				if(V_Prelude.equals(Appoint_Prelude.V_C) && s == true) {
+				if(V_Prelude.equals(Appoint_Prelude.V_C)) {
 					Appoint_Client.state[my] = 1;
 					Cchatthread init = new Cchatthread(chatVport,my,"in",MyName);
 					Cchatthread out = new Cchatthread(chatVport,my,"out",MyName);
-					System.out.println("开启线程");
 					init.start();
 					out.start();
 				}
@@ -267,14 +233,14 @@ public class Client01 {
 				while(!v_Prelude.equals(Appoint_Prelude.V_C)) {
 					oos.writeObject(ToV);
 				}
-				boolean s = c1.FromV(FromV);
+				c1.FromV(FromV);
 				String V_Prelude = FromV.get("Prelude");
-				if(V_Prelude.equals(Appoint_Prelude.V_C) && s == true) {
+				if(V_Prelude.equals(Appoint_Prelude.V_C)) {
 					System.out.println("收到V-》C");
 		        	Cftpthread upload = new Cftpthread(FTPport,"upload");//上传
-		        	//Cftpthread download = new Cftpthread(FTPport,"download");//下载 
+		        	Cftpthread download = new Cftpthread(FTPport,"download");//下载 
 		        	upload.start();
-		        	//download.start();
+		        	download.start();
 				}
 			}
 		} catch (IOException e) {
@@ -282,3 +248,4 @@ public class Client01 {
 		}
 	}
 }
+*/

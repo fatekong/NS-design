@@ -43,7 +43,7 @@ class TGSThread extends Thread {
 		System.out.println("ticket:" + ticket);
 		
 		DES des = new DES();
-		ticket_M = des.decode(ticket, ktgs);
+		ticket_M = des.decode_pro(ticket, ktgs);
 		/*
 		 * 此处需要使用Etgs对进行ticket解密
 		 *
