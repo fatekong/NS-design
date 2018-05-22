@@ -1,18 +1,18 @@
-package ASpackage;
+package Test;
 import java.net.*;
 import java.io.*;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
+//残缺版
 class ASThread extends Thread{
 	//public static final String SERVER_IP = "127.0.0.1";
 	int portnum;
 	String ADc="China";
-	static String kc = "12345678";
+	String kc = "12345678";
 	String kctgs = "";
-	static String ktgs = "bbbbbbbb";
+	String ktgs = "bbbbbbbb";
 	String IDtgs = "TGS";
 	String lifetime2 = "2";
 	Socket Sockets = null;
@@ -58,7 +58,6 @@ class ASThread extends Thread{
 						AS.ashow.SetTex("Prelude："+Appoint_Prelude.AS_C +"\n");
 						toclient.put("Prelude", Appoint_Prelude.AS_C);
 						kctgs = des.Main_key();
-						//kctgs = "v7377777";
 						String des_kctgs = des.encode(kctgs, kc);
 						AS.ashow.SetTex("kctgs："+ des_kctgs +"\n");
 						
@@ -72,36 +71,25 @@ class ASThread extends Thread{
 						String des_TS2=des.encode(TS2, kc);
 						
 						AS.ashow.SetTex("TS2："+ des_TS2 +"\n");
-						String ticket_to_tgs_before= kctgs + "-" + IDc + "-" + ADc + "-" + "TGS" + "-" + TS2 + "-" + "2" + "-";
-						System.out.println(ticket_to_tgs_before);
-						AS.ashow.SetTex("ticket_to_tgs_before：" + ticket_to_tgs_before + "\n");
+						String ticket_to_tgs_before= kctgs + "-" + IDc + "-" + ADc + "-" + "TGS" + "-" + TS2 + "-" + "2";
+						
 						String des_Lifetime2=des.encode(lifetime2, kc);
 						AS.ashow.SetTex("Lifetime2："+ des_Lifetime2 +"\n");
 						toclient.put("des_LifeTime2", des_Lifetime2);//
-						
-						//System.out.println("Ticket:" + ticket_to_tgs);
-						byte[] aaa= ticket_to_tgs_before.getBytes("UTF8");//明文二进制
-						byte[] bbb = des.encode_b(aaa, ktgs);//第一次加密后的票据密文二进制
-						byte[] ccc = des.encode_b(bbb, kc);//第二次加密后的密文二进制
+						System.out.println("Ticket:" + ticket_to_tgs);
+						//ticket_to_tgs = des.encode_pro(ticket_to_tgs_before, ktgs);
+						System.out.println("第一次加密：" + ticket_to_tgs);
+						//ticket_to_tgs = des.encode_pro(ticket_to_tgs, kc);
+						System.out.println("第二次加密：" + ticket_to_tgs);
 						AS.ashow.SetTex("Tickettgs："+ ticket_to_tgs +"\n");
-						String temp = new String(ccc,"ISO_8859_1");//第二次加密的密文String
-						temp.trim();
 						
-						byte[] kkk = temp.getBytes("ISO_8859_1");//二次加密后的密文二进制（等同于ccc）
-						byte[] mmm = des.decode_b(kkk, kc);//第一次解密后的密文二进制
-						String temp11 = new String(mmm,"ISO_8859_1");//第一次解密后的密文String
-						temp11.trim();
-						byte[] kkk11 = temp11.getBytes("ISO_8859_1");//第一次解密后的密文二进制
-						byte[] sss = des.decode_b(kkk11, ktgs);//第二次解密后的密文二级制（明文二进制）
-						String ttt = new String(sss,"UTF8");//第二次解密后的明文String
-						ttt.trim();
-						System.out.println("第二次解密：" + ttt);
-						toclient.put("ticket_to_tgs_before", temp);
+						//System.out.println("第一次解密：" + des.decode_pro(ticket_to_tgs, kc));
+						//System.out.println("第二次解密：" + des.decode_pro(des.decode_pro(ticket_to_tgs, kc), ktgs));
+						toclient.put("ticket_to_tgs_before", ticket_to_tgs);
 						
 						toclient.put("TS2", des_TS2);//
-						//DataOutputStream out = new DataOutputStream(Sockets.getOutputStream());
+						
 						oos.writeObject(toclient);
-						//out.write(ccc);
 					}
 					else {
 						toclient.put("Prelude", Appoint_Prelude.AS_C_error);

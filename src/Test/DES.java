@@ -1,8 +1,9 @@
-package FTPpackage;
+package Test;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * @author generalandroid
@@ -10,6 +11,20 @@ import java.util.Arrays;
  * 根据DES算法原理实现DES加密算法，主要是为了更加深入地理解DES算法
  * **/
 public class DES {
+	public String Main_key()//鐢熸垚浜嗗瘑閽�
+    {
+    		String key="";
+    		int element = 0;
+    		Random random = new Random();
+    		for(int i = 0 ; i < 8 ; i++) {
+    			element = Math.abs(random.nextInt())%95+32;
+    			if((char)element!='-'&&(char)element!='"') 
+    				key += (char)element;
+    			else
+    				i--;
+    		}
+    		return key;
+    }
     //初始置换
     private int[] IP={58,50,42,34,26,18,10,2,
                      60,52,44,36,28,20,12,4,
@@ -125,7 +140,7 @@ public class DES {
     		customDES.generateKeys(key);
     		byte[] c=customDES.deal(plaintext.getBytes("UTF8"),1);
     		ans = new String(c,"ISO_8859_1");
-    		System.out.println("密文：\n"+ans);
+    		//System.out.println("密文：\n"+ans);
 //    		ans = ans.trim();
     		return ans;
     }
@@ -147,7 +162,7 @@ public class DES {
     		byte[] temp = plaintext.getBytes("ISO_8859_1");
     		byte[] c=customDES.deal(temp,0);
     		String ans=new String(c,"UTF8");
-    		System.out.println("明文：\n"+ans);
+    		//System.out.println("明文：\n"+ans);
     		ans=ans.trim();
     		return ans;
     }

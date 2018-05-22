@@ -1,4 +1,4 @@
-package FTPpackage;
+package FTP_revision;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -23,20 +23,22 @@ public class VFTPthread extends Thread {
 	ServerSocket Servers;
 	Socket Sockets;
 	String model = "";// upload是上传，download是下载
-	int my ;
-	public VFTPthread(String m, int port) {
+	String MY_IP = "";
+	//int my ;
+	public VFTPthread(int port ,String IP, String m) {
 		this.portnum = port;
 		this.model = m;
 		this.portnum_in = port + 1000;
 		this.portnum_out = port + 1100;
-		if(port == 10012)
+		MY_IP = IP;
+		/*if(port == 10012)
 			my = 0;
 		else if(port == 10013)
 			my = 1;
 		else if(port == 10014)
 			my = 2;
 		else if(port == 10015)
-			my = 3;
+			my = 3;*/
 	}
 
 	@SuppressWarnings({ "unchecked", "resource" })
@@ -54,8 +56,8 @@ public class VFTPthread extends Thread {
 				if(Prelude.equals(Appoint_Prelude.C_V_ftp_name)) {
 					filename = formclient.get("FileName");
 					DES des = new DES();
-					filename = des.decode(filename, FTP.kcv[my]);
-					filename = my + "_" +filename;
+					filename = des.decode(filename, FTP.kcv.get(MY_IP));
+					filename = MY_IP + "_" +filename;
 					
 					File file = new File(filepath + File.separatorChar + filename);
 					HashMap<String, String> toclient = new HashMap<String, String>();
@@ -81,15 +83,16 @@ public class VFTPthread extends Thread {
 							Toclient.put("Prelude", Appoint_Prelude.V_C_ftp_file);
 							System.out.println("recv file...");
 							length = dis.read(bytes);
-							String s = formclient.get("s");
+							bytes = des.decode_b(bytes, FTP.kcv.get(MY_IP));
+							//String s = formclient.get("s");
 							/*String frombytes = new String(bytes);
 							frombytes = des.decode(frombytes, FTP.kcv[my]);
 							System.out.println(frombytes);
 							System.out.println( "*******************************");
 							bytes = frombytes.getBytes();
 							length = bytes.length;*/
-							byte[] temp = s.getBytes(); 
-							fos.write(bytes, 0, temp.length);
+							//byte[] temp = s.getBytes(); 
+							fos.write(bytes, 0, length);
 							oos.writeObject(Toclient);
 		                    fos.flush();
 		                    

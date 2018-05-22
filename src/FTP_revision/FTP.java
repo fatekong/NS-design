@@ -1,10 +1,12 @@
-package FTPpackage;
+package FTP_revision;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 class FTPVThread extends Thread {
 	public static final String SERVER_IP = "127.0.0.1";
@@ -18,9 +20,12 @@ class FTPVThread extends Thread {
 	private String TS4 = "";
 	private String TS5 = "";
 	private String LifeTime = "";
-
-	public FTPVThread(int num) {
+	private String SOCKET_IP = ""; 
+	private Socket Sockets;
+	public FTPVThread(int num,String ip,Socket so) {
 		portnum = num;
+		SOCKET_IP = ip;
+		Sockets = so;
 	}
 
 	public HashMap<String, String> packet() throws UnsupportedEncodingException {
@@ -101,8 +106,8 @@ class FTPVThread extends Thread {
 
 		try {
 			while (true) {
-				ServerSocket Servers = new ServerSocket(portnum);
-				Socket Sockets = Servers.accept();
+				//ServerSocket Servers = new ServerSocket(portnum);
+				//Socket Sockets = Servers.accept();
 				InputStream in = Sockets.getInputStream();
 				ObjectInputStream ois = new ObjectInputStream(in);
 				OutputStream os = Sockets.getOutputStream();
@@ -114,7 +119,8 @@ class FTPVThread extends Thread {
 					boolean s = unpacked(fromclient);
 					System.out.println(s);
 					if (s == true) {
-						if (portnum == 10012) {
+						FTP.kcv.put(SOCKET_IP,kcv);
+						/*if (portnum == 10012) {
 							client_num = 0;
 							FTP.kcv[0] = kcv;
 						} else if (portnum == 10013) {
@@ -126,18 +132,18 @@ class FTPVThread extends Thread {
 						} else if (portnum == 10015) {
 							client_num = 3;
 							FTP.kcv[3] = kcv;
-						}
+						}*/
 						HashMap<String, String> toclient = new HashMap<String, String>();
 						toclient = packet();
 						oos.writeObject(toclient);
 						// VFTPthread upload = new VFTPthread("upload", portnum);// C下载V的文件
-						VFTPthread download = new VFTPthread("download", portnum);// C向V上传文件
+						VFTPthread download = new VFTPthread(portnum, SOCKET_IP, "download");// C向V上传文件
 						// upload.start();// C下载V的文件
 						download.start();// C向V上传文件
 						System.out.println("出来了");
 					}
 				}
-				Servers.close();
+				//Servers.close();
 				Sockets.close();
 			}
 		} catch (IOException | ClassNotFoundException e) {
@@ -149,16 +155,35 @@ class FTPVThread extends Thread {
 public class FTP {
 	public static final String FilePath = "D:\\学术\\资料\\智能优化\\差分进化";
 	static String MyID = "FTP";
-	static String kcv[] = new String[4];
-
-	public static void main(String[] args) {
-		FTPVThread forclient1 = new FTPVThread(10012);
+	static int port = 10012;
+	//static String kcv[] = new String[4];
+	public static HashMap<String , String> kcv = new HashMap<String,String>();
+	@SuppressWarnings("resource")
+	public static void main(String[] args) throws IOException {
+		ServerSocket Server = null;
+		Socket Socket = null;
+		Server = new ServerSocket(port);
+		Executor executor = Executors.newFixedThreadPool(4);
+		while(true) {
+			Socket = Server.accept();
+			String ip = Socket.getInetAddress().toString();
+			//String ip = "127.0.0.1";
+			System.out.println("收到：" +ip);
+			//if(ip == "/127.0.0.1")
+				ip = "127.0.0.1";
+			//ASThread forclient1 = new ASThread(10000);
+			//forclient1.start();
+			executor.execute(new FTPVThread(port,ip,Socket));
+			
+		}
+		
+		/*FTPVThread forclient1 = new FTPVThread(10012);
 		FTPVThread forclient2 = new FTPVThread(10013);
 		FTPVThread forclient3 = new FTPVThread(10014);
 		FTPVThread forclient4 = new FTPVThread(10015);
 		forclient1.start();
 		forclient2.start();
 		forclient3.start();
-		forclient4.start();
+		forclient4.start();*/
 	}
 }

@@ -4,6 +4,9 @@ import java.net.*;
 import java.io.*;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 
 class TGSThread extends Thread {
 	public static final String SERVER_IP = "127.0.0.1";
@@ -27,44 +30,57 @@ class TGSThread extends Thread {
 	public String Authenticator;
 	public String Authenticator_M;// 解密后的Authenticator
 	public String checker;// 检票用
-
-	public TGSThread(int num) {
-		portnum = num;
+	Socket Sockets = null;
+	public TGSThread(Socket socket) {
+		Sockets = socket;
 	}
 
-	public void unpacked(HashMap<String, String> fromclient) {
+	public void unpacked(HashMap<String, String> fromclient) throws UnsupportedEncodingException {
+		TGS.tgshow.SetTex("******************rescive******************\n解密前：\n");
 		Prelude = fromclient.get("Prelude");// 首部
 		System.out.println("Prelude:" + Prelude);
-		
+		TGS.tgshow.SetTex("首部：" + Prelude + "\n");
 		IDv = fromclient.get("IDv");// IDv
 		System.out.println("IDv:" + IDv);
-		
+		TGS.tgshow.SetTex("IDv：" + IDv + "\n");
 		ticket = fromclient.get("Ticket");//
 		System.out.println("ticket:" + ticket);
-		
+		TGS.tgshow.SetTex("Tickettgs：" + ticket + "\n");
 		DES des = new DES();
-		ticket_M = des.decode_pro(ticket, ktgs);
+		//ticket_M = des.decode(ticket, ktgs);
+		byte[] kkk11 = ticket.getBytes("ISO_8859_1");
+		byte[] sss = des.decode_b(kkk11, ktgs);//第二次解密后的密文二级制（明文二进制）
+		ticket_M = new String(sss,"UTF8");
+		TGS.tgshow.SetTex("Ticket解密：" + ticket_M + "\n");
 		/*
 		 * 此处需要使用Etgs对进行ticket解密
 		 *
 		 */
 		String[] ticket_pro = ticket_M.split("-");// 解密后的tickets拆包
 		kctgs = ticket_pro[0];// C和TGS之间的钥匙
+		//TGS.tgshow.SetTex("kctgs：" + kctgs + "\n");
 		System.out.println("kctgs:" + kctgs);
 		IDc = ticket_pro[1];// C的ID号
 		System.out.println("IDc: "+IDc);
+		//TGS.tgshow.SetTex("IDc：" + IDc + "\n");
 		ADc = ticket_pro[2];//
 		System.out.println("ADc: "+ADc);
+		//TGS.tgshow.SetTex("ADc：" + ADc + "\n");
 		IDtgs = ticket_pro[3];// TGS的ID号
 		System.out.println("IDtgs: "+IDtgs);
+		//TGS.tgshow.SetTex("IDtgs：" + IDtgs + "\n");
 		TS2 = ticket_pro[4];
 		System.out.println("TS2: "+TS2);
+		//TGS.tgshow.SetTex("TS2：" + TS2 + "\n");
 		LifeTime2 = ticket_pro[5];
 		System.out.println("LifeTime2: "+LifeTime2);
+		//TGS.tgshow.SetTex("LifeTime2：" + LifeTime2 + "\n");
 		
 		Authenticator = fromclient.get("Authenticator");
+		TGS.tgshow.SetTex("Authenticator解密前：" + Authenticator + "\n");
 		System.out.println("Authenticator:" + Authenticator);
 		Authenticator_M = des.decode(Authenticator, kctgs);// 解密
+		TGS.tgshow.SetTex("Authenticator解密后：" + Authenticator_M + "\n");
 		/*
 		 * 此处需要使用Kc,tgs对Authenticator进行解密
 		 * 
@@ -76,11 +92,13 @@ class TGSThread extends Thread {
 		System.out.println("ADc: "+ADc);
 		TS3 = Authenticator_pro[2];
 		System.out.println("TS3: "+TS3);
+		TGS.tgshow.SetTex("*****************************************\n");
 	}
 
-	public HashMap<String, String> packet() {
+	public HashMap<String, String> packet() throws UnsupportedEncodingException {
 		// 包kcv + IDv + TS4 + Ticketv
 		HashMap<String, String> toclient = new HashMap<String, String>();
+		TGS.tgshow.SetTex("******************send******************\n");
 		DES des = new DES();
 		kcv = des.Main_key();// 封包
 		System.out.println("Kcv: "+kcv);
@@ -90,29 +108,36 @@ class TGSThread extends Thread {
 		int hour = c.get(Calendar.HOUR_OF_DAY);
 		int minute = c.get(Calendar.MINUTE);
 		TS4 = month + "." + date + "." + hour + "." + minute;// 封包
+		//TGS.tgshow.SetTex("TS4：" + TS4 + "\n");
 		// Ticketv
 		LifeTime4 = Integer.parseInt(LifeTime2)+"";
 		ADc = "china";
 		String Ticket_beforeDES = kcv + "-" + IDc + "-" + ADc + "-" + IDv + "-" + TS4 + "-" + LifeTime4;
 		System.out.println("Ticket: "+Ticket_beforeDES);
+		
 		String Ticketv = des.encode(Ticket_beforeDES, kv);
+		TGS.tgshow.SetTex("Ticketv：" + Ticketv + "\n");
 		String kcv_afterDES = des.encode(kcv, kctgs);
+		TGS.tgshow.SetTex("kcv：" + kcv + "\n");
 		String idv_afterDES = des.encode(IDv, kctgs);
+		TGS.tgshow.SetTex("IDv：" + IDv + "\n");
 		String TS4_afterDES = des.encode(TS4, kctgs);
+		TGS.tgshow.SetTex("加密后TS4：" + TS4 + "\n");
 		//String Tct_afterDES = des.encode(Ticket_beforeDES, kctgs);
 		toclient.put("Prelude", Appoint_Prelude.TGS_C);
 		toclient.put("K(c,v)", kcv_afterDES);
 		toclient.put("IDv", idv_afterDES);
 		toclient.put("TS4", TS4_afterDES);
 		toclient.put("Ticket", Ticketv);
+		TGS.tgshow.SetTex("*****************************************\n");
 		return toclient;
 	}
 
 	public void run() {
 		try {
-			ServerSocket Servers = new ServerSocket(portnum);
-			while (true) {
-				Socket Sockets = Servers.accept();
+			//ServerSocket Servers = new ServerSocket(portnum);
+			//while (true) {
+				//Socket Sockets = Servers.accept();
 				OutputStream os = Sockets.getOutputStream();
 				ObjectOutputStream oos = new ObjectOutputStream(os);
 				InputStream in = Sockets.getInputStream();
@@ -140,7 +165,7 @@ class TGSThread extends Thread {
 							System.out.println("ADc验证失败！");
 							toclient.put("error", "ADc验证失败");
 							oos.writeObject(toclient);
-							continue;
+							//continue;
 						} else if (Integer.parseInt(LifeTime2) != 2)// 检查tickets中的各项数据
 						{
 							toclient.put("Prelude", Appoint_Prelude.TGS_C_error);
@@ -163,7 +188,8 @@ class TGSThread extends Thread {
 					toclient.put("error", "超时");
 					oos.writeObject(toclient);
 				}
-			}
+			//}
+				Sockets.close();
 		} catch (IOException | ClassNotFoundException e) {
 			System.out.println("错误");
 		}
@@ -171,14 +197,34 @@ class TGSThread extends Thread {
 }
 
 public class TGS {
-	public static void main(String[] args) throws IOException {
-		TGSThread forclient1 = new TGSThread(10004);
+	@SuppressWarnings("resource")
+	public static boolean sign = false;
+	static TGSshow tgshow ;
+	@SuppressWarnings("resource")
+	public static void main(String[] args) throws IOException, InterruptedException {
+		tgshow = new TGSshow();
+		ServerSocket Server = null;
+		@SuppressWarnings("unused")
+		Socket Socket = null;
+		while(sign == false) {
+			Thread.sleep(1000);
+		}
+		Server = new ServerSocket(10001);
+		Executor executor = Executors.newFixedThreadPool(4);
+		while(true) {
+			Socket = Server.accept();
+			//ASThread forclient1 = new ASThread(10000);
+			//forclient1.start();
+			executor.execute(new TGSThread(Socket));
+
+		}
+		/*TGSThread forclient1 = new TGSThread(10004);
 		TGSThread forclient2 = new TGSThread(10005);
 		TGSThread forclient3 = new TGSThread(10006);
 		TGSThread forclient4 = new TGSThread(10007);
 		forclient1.start();
 		forclient2.start();
 		forclient3.start();
-		forclient4.start();
+		forclient4.start();*/
 	}
 }

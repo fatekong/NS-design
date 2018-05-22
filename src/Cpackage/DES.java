@@ -1,404 +1,425 @@
 package Cpackage;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
-
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.Random;
 
-
+/**
+ * @author generalandroid
+ *
+ * 根据DES算法原理实现DES加密算法，主要是为了更加深入地理解DES算法
+ * **/
 public class DES {
-    // 锟矫伙拷IP锟斤拷
-    private int[] IP_Table = { 58, 50, 42, 34, 26, 18, 10, 2, 60, 52, 44, 36, 28, 20, 12, 4, 62, 54, 46, 38, 30, 22, 14,
-            6, 64, 56, 48, 40, 32, 24, 16, 8, 57, 49, 41, 33, 25, 17, 9, 1, 59, 51, 43, 35, 27, 19, 11, 3, 61, 53, 45,
-            37, 29, 21, 13, 5, 63, 55, 47, 39, 31, 23, 15, 7 };
-    // 锟斤拷锟矫伙拷IP-1锟斤拷
-    private int[] IPR_Table = { 40, 8, 48, 16, 56, 24, 64, 32, 39, 7, 47, 15, 55, 23, 63, 31, 38, 6, 46, 14, 54, 22, 62,
-            30, 37, 5, 45, 13, 53, 21, 61, 29, 36, 4, 44, 12, 52, 20, 60, 28, 35, 3, 43, 11, 51, 19, 59, 27, 34, 2, 42,
-            10, 50, 18, 58, 26, 33, 1, 41, 9, 49, 17, 57, 25 };
-    // E位选锟斤拷锟�(锟斤拷展锟矫伙拷锟斤拷)
-    private int[] E_Table = { 32, 1, 2, 3, 4, 5, 4, 5, 6, 7, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 14, 15, 16, 17, 16, 17,
-            18, 19, 20, 21, 20, 21, 22, 23, 24, 25, 24, 25, 26, 27, 28, 29, 28, 29, 30, 31, 32, 1 };
-    // P锟斤拷位锟斤拷(锟斤拷锟斤拷锟斤拷位锟斤拷)
-    private int[] P_Table = { 16, 7, 20, 21, 29, 12, 28, 17, 1, 15, 23, 26, 5, 18, 31, 10, 2, 8, 24, 14, 32, 27, 3, 9,
-            19, 13, 30, 6, 22, 11, 4, 25 };
-    // PC1选位锟斤拷(锟斤拷钥锟斤拷锟斤拷锟矫伙拷锟斤拷1)
-    private int[] PC1_Table = { 57, 49, 41, 33, 25, 17, 9, 1, 58, 50, 42, 34, 26, 18, 10, 2, 59, 51, 43, 35, 27, 19, 11,
-            3, 60, 52, 44, 36, 63, 55, 47, 39, 31, 23, 15, 7, 62, 54, 46, 38, 30, 22, 14, 6, 61, 53, 45, 37, 29, 21, 13,
-            5, 28, 20, 12, 4 };
-    // PC2选位锟斤拷(锟斤拷钥锟斤拷锟斤拷锟矫伙拷锟斤拷2)
-    private int[] PC2_Table = { 14, 17, 11, 24, 1, 5, 3, 28, 15, 6, 21, 10, 23, 19, 12, 4, 26, 8, 16, 7, 27, 20, 13, 2,
-            41, 52, 31, 37, 47, 55, 30, 40, 51, 45, 33, 48, 44, 49, 39, 56, 34, 53, 46, 42, 50, 36, 29, 32 };
-    // 锟斤拷锟斤拷位锟斤拷锟斤拷
-    private int[] LOOP_Table = { 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1 };
-    // S锟斤拷
-    private int[][] S_Box = {
-            // S1
-            { 14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7, 0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3,
-                    8, 4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0, 15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10,
-                    0, 6, 13 },
-            // S2
-            { 15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10, 3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11,
-                    5, 0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15, 13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0,
-                    5, 14, 9 },
-            // S3
-            { 10, 0, 9, 14, 6, 3, 15, 5, 1, 13, 12, 7, 11, 4, 2, 8, 13, 7, 0, 9, 3, 4, 6, 10, 2, 8, 5, 14, 12, 11, 15,
-                    1, 13, 6, 4, 9, 8, 15, 3, 0, 11, 1, 2, 12, 5, 10, 14, 7, 1, 10, 13, 0, 6, 9, 8, 7, 4, 15, 14, 3, 11,
-                    5, 2, 12 },
-            // S4
-            { 7, 13, 14, 3, 0, 6, 9, 10, 1, 2, 8, 5, 11, 12, 4, 15, 13, 8, 11, 5, 6, 15, 0, 3, 4, 7, 2, 12, 1, 10, 14,
-                    9, 10, 6, 9, 0, 12, 11, 7, 13, 15, 1, 3, 14, 5, 2, 8, 4, 3, 15, 0, 6, 10, 1, 13, 8, 9, 4, 5, 11, 12,
-                    7, 2, 14 },
-            // S5
-            { 2, 12, 4, 1, 7, 10, 11, 6, 8, 5, 3, 15, 13, 0, 14, 9, 14, 11, 2, 12, 4, 7, 13, 1, 5, 0, 15, 10, 3, 9, 8,
-                    6, 4, 2, 1, 11, 10, 13, 7, 8, 15, 9, 12, 5, 6, 3, 0, 14, 11, 8, 12, 7, 1, 14, 2, 13, 6, 15, 0, 9,
-                    10, 4, 5, 3 },
-            // S6
-            { 12, 1, 10, 15, 9, 2, 6, 8, 0, 13, 3, 4, 14, 7, 5, 11, 10, 15, 4, 2, 7, 12, 9, 5, 6, 1, 13, 14, 0, 11, 3,
-                    8, 9, 14, 15, 5, 2, 8, 12, 3, 7, 0, 4, 10, 1, 13, 11, 6, 4, 3, 2, 12, 9, 5, 15, 10, 11, 14, 1, 7, 6,
-                    0, 8, 13 },
-            // S7
-            { 4, 11, 2, 14, 15, 0, 8, 13, 3, 12, 9, 7, 5, 10, 6, 1, 13, 0, 11, 7, 4, 9, 1, 10, 14, 3, 5, 12, 2, 15, 8,
-                    6, 1, 4, 11, 13, 12, 3, 7, 14, 10, 15, 6, 8, 0, 5, 9, 2, 6, 11, 13, 8, 1, 4, 10, 7, 9, 5, 0, 15, 14,
-                    2, 3, 12 },
-            // S8
-            { 13, 2, 8, 4, 6, 15, 11, 1, 10, 9, 3, 14, 5, 0, 12, 7, 1, 15, 13, 8, 10, 3, 7, 4, 12, 5, 6, 11, 0, 14, 9,
-                    2, 7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8, 2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3,
-                    5, 6, 11 } };
-    
-    public String Main_key()//鐢熸垚浜嗗瘑閽�
+	public String Main_key()//鐢熸垚浜嗗瘑閽�
     {
     		String key="";
     		int element = 0;
     		Random random = new Random();
     		for(int i = 0 ; i < 8 ; i++) {
     			element = Math.abs(random.nextInt())%95+32;
-//    			System.out.println(element +"," +(char)element);
-    			key += (char)element;
+    			if((char)element!='-'&&(char)element!='"') 
+    				key += (char)element;
+    			else
+    				i--;
     		}
     		return key;
     }
+    //初始置换
+    private int[] IP={58,50,42,34,26,18,10,2,
+                     60,52,44,36,28,20,12,4,
+                     62,54,46,38,30,22,14,6,
+                     64,56,48,40,32,24,16,8,
+                     57,49,41,33,25,17,9,1,
+                     59,51,43,35,27,19,11,3,
+                     61,53,45,37,29,21,13,5,
+                     63,55,47,39,31,23,15,7};
+    //逆初始置换
+    private int[] IP_1={40,8,48,16,56,24,64,32,
+                       39,7,47,15,55,23,63,31,
+                       38,6,46,14,54,22,62,30,
+                       37,5,45,13,53,21,61,29,
+                       36,4,44,12,52,20,60,28,
+                       35,3,43,11,51,19,59,27,
+                       34,2,42,10,50,18,58,26,
+                       33,1,41,9,49,17,57,25};//手残，数组数据没写全
+    //E扩展
+    private int[] E={32,1,2,3,4,5,
+                      4,5,6,7,8,9,
+                     8,9,10,11,12,13,
+                     12,13,14,15,16,17,
+                     16,17,18,19,20,21,
+                     20,21,22,23,24,25,
+                     24,25,26,27,28,29,
+                     28,29,30,31,32,1};
+    //P置换
+    private int[] P={16,7,20,21,29,12,28,17,
+                      1,15,23,26,5,18,31,10,
+                      2,8,24,14,32,27,3,9,
+                      19,13,30,6,22,11,4,25};
+    private static final int[][][] S_Box = {
+            {
+                    { 14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7 },
+                    { 0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8 },
+                    { 4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0 },
+                    { 15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13 } },
+            { 
+                    { 15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10 },
+                    { 3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5 },
+                    { 0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15 },
+                    { 13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9 } },
+            { 
+                    { 10, 0, 9, 14, 6, 3, 15, 5, 1, 13, 12, 7, 11, 4, 2, 8 },
+                    { 13, 7, 0, 9, 3, 4, 6, 10, 2, 8, 5, 14, 12, 11, 15, 1 },
+                    { 13, 6, 4, 9, 8, 15, 3, 0, 11, 1, 2, 12, 5, 10, 14, 7 },
+                    { 1, 10, 13, 0, 6, 9, 8, 7, 4, 15, 14, 3, 11, 5, 2, 12 } },
+            { 
+                    { 7, 13, 14, 3, 0, 6, 9, 10, 1, 2, 8, 5, 11, 12, 4, 15 },
+                    { 13, 8, 11, 5, 6, 15, 0, 3, 4, 7, 2, 12, 1, 10, 14, 9 },
+                    { 10, 6, 9, 0, 12, 11, 7, 13, 15, 1, 3, 14, 5, 2, 8, 4 },
+                    { 3, 15, 0, 6, 10, 1, 13, 8, 9, 4, 5, 11, 12, 7, 2, 14 } },
+            { 
+                    { 2, 12, 4, 1, 7, 10, 11, 6, 8, 5, 3, 15, 13, 0, 14, 9 },
+                    { 14, 11, 2, 12, 4, 7, 13, 1, 5, 0, 15, 10, 3, 9, 8, 6 },
+                    { 4, 2, 1, 11, 10, 13, 7, 8, 15, 9, 12, 5, 6, 3, 0, 14 },
+                    { 11, 8, 12, 7, 1, 14, 2, 13, 6, 15, 0, 9, 10, 4, 5, 3 } },
+            { 
+                    { 12, 1, 10, 15, 9, 2, 6, 8, 0, 13, 3, 4, 14, 7, 5, 11 },
+                    { 10, 15, 4, 2, 7, 12, 9, 5, 6, 1, 13, 14, 0, 11, 3, 8 },
+                    { 9, 14, 15, 5, 2, 8, 12, 3, 7, 0, 4, 10, 1, 13, 11, 6 },
+                    { 4, 3, 2, 12, 9, 5, 15, 10, 11, 14, 1, 7, 6, 0, 8, 13 } },
+            { 
+                    { 4, 11, 2, 14, 15, 0, 8, 13, 3, 12, 9, 7, 5, 10, 6, 1 },
+                    { 13, 0, 11, 7, 4, 9, 1, 10, 14, 3, 5, 12, 2, 15, 8, 6 },
+                    { 1, 4, 11, 13, 12, 3, 7, 14, 10, 15, 6, 8, 0, 5, 9, 2 },
+                    { 6, 11, 13, 8, 1, 4, 10, 7, 9, 5, 0, 15, 14, 2, 3, 12 } },
+            { 
+                    { 13, 2, 8, 4, 6, 15, 11, 1, 10, 9, 3, 14, 5, 0, 12, 7 },
+                    { 1, 15, 13, 8, 10, 3, 7, 4, 12, 5, 6, 11, 0, 14, 9, 2 },
+                    { 7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8 },
+                    { 2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11 } }
+    };
+    //PC-1
+    private int[] PC1={57,49,41,33,25,17,9,
+                       1,58,50,42,34,26,18,
+                       10,2,59,51,43,35,27,
+                        19,11,3,60,52,44,36,
+                       63,55,47,39,31,23,15,
+                       7,62,54,46,38,30,22,
+                       14,6,61,53,45,37,29,
+                       21,13,5,28,20,12,4};
+    //PC-2
+    private int[] PC2={14,17,11,24,1,5,3,28,
+                       15,6,21,10,23,19,12,4,
+                       26,8,16,7,27,20,13,2,
+                       41,52,31,37,47,55,30,40,
+                       51,45,33,48,44,49,39,56,
+                       34,53,46,42,50,36,29,32};
+    //Schedule of Left Shifts
+    private int[] LFT={1,1,2,2,2,2,2,2,1,2,2,2,2,2,2,1};
+    /**加密轮数**/
+    private static final int LOOP_NUM=16;
+    private String [] keys=new String[LOOP_NUM];
+    private String [] pContent;
+    private String [] cContent;
+    private int origin_length;
+    /**16个子密钥**/
+    private int[][] sub_key=new int[16][48];
+//    public DES(String key,String content){
+//
+//        //this.content=content;
+//        //p_origin_length=content.getBytes().length;
+//        generateKeys(key);
+//
+//    }
     
-    String encode(String plaintext,String key)
+    public String encode(String plaintext,String key) throws UnsupportedEncodingException
     {
-
-        String plaintext_fake="";
-        DES des = new DES();
-        String ciphertext="";
-
-//  .substring(i * 8, (i + 1) * 8)
-//        StringBuffer plaintextBinary = new StringBuffer();
-        StringBuffer mSubPlaintextTemp = new StringBuffer();
-        for (int i = 0; i < plaintext.length(); ++i) {
-        		StringBuffer temp=new StringBuffer();
-        		temp.append(Integer.toBinaryString(plaintext.charAt(i)));
-        		while (temp.length() < 8) {
-        			temp.insert(0, 0);
-            }
-        		while (temp.length() ==15) {
-        			temp.insert(0, 1);
-        		//	temp.replace(0, 1, "1");
-            }
-            mSubPlaintextTemp.append(temp);
-        }
-        for (int i = 0; i < mSubPlaintextTemp.length()/8; ++i) {
-        		String temp="";
-        		temp = mSubPlaintextTemp.substring(i * 8, (i + 1) * 8);
-        	plaintext_fake+=(char) Integer.parseInt(temp, 2);
-        }
-      
-        
-        int res1=plaintext_fake.length()%8;
-        int res2=plaintext_fake.length()/8;
-        for(int i=res2*8+res1-1;i<(res2+1)*8-1;++i)//
-        {
-        		plaintext_fake+=" ";
-        }
-        for(int i=0;i<=res2;++i)
-        {
-        		String plaintext_temp="";
-        		for(int j=i*8;j<(i+1)*8;++j)
-        		{
-        			plaintext_temp+=plaintext_fake.charAt(j);
-        		}
-        		ciphertext+=des.encrypt(plaintext_temp, key, "encrypt");
-        }
-        //System.out.println("鏄庢枃锛�" + plaintext + "\n瀵嗛挜锛�" + key + "\n瀵嗘枃:" + ciphertext);
-        return ciphertext;
+    		String ans="";
+    		DES customDES=new DES();
+    		customDES.generateKeys(key);
+    		byte[] c=customDES.deal(plaintext.getBytes("UTF8"),1);
+    		ans = new String(c,"ISO_8859_1");
+    		//System.out.println("密文：\n"+ans);
+//    		ans = ans.trim();
+    		return ans;
     }
     
-    String encode_pro(String plaintext,String key)
+    public byte[] encode_b(byte[] plaintext_b,String key) throws UnsupportedEncodingException
     {
-        DES des = new DES();
-        String ciphertext="";
-        int res1=plaintext.length()%8;
-        int res2 = plaintext.length()/8;
-        for(int i=res2*8+res1-1;i<(res2+1)*8-1;++i)//
-        {
-        		plaintext+=" ";
-        }
-        for(int i=0;i<=res2;++i)
-        {
-        		String plaintext_temp="";
-        		for(int j=i*8;j<(i+1)*8;++j)
-        		{
-        			plaintext_temp+=plaintext.charAt(j);
-        		}
-        		ciphertext+=des.encrypt(plaintext_temp, key, "encrypt");
-        }
-        //System.out.println("鏄庢枃锛�" + plaintext + "\n瀵嗛挜锛�" + key + "\n瀵嗘枃:" + ciphertext);
-        return ciphertext;
+    		DES customDES=new DES();
+    		customDES.generateKeys(key);
+    		byte[] c=customDES.deal(plaintext_b,1);
+//    		ans = ans.trim();
+    		return c;
     }
     
-    public String decode_pro(String ciphertext,String key)
+    public String decode(String plaintext,String key) throws UnsupportedEncodingException
     {
-    		DES des = new DES();
-
-        		String plaintext_pro="";
-        StringBuffer ciphertext_new = new StringBuffer(); 
-        int res1=ciphertext.length()%8;
-        int res2=ciphertext.length()/8;
-        for(int i=0;i<res2;++i)
-        {
-        		String ciphertext_temp="";
-        		for(int j=i*8;j<(i+1)*8;++j)
-        		{
-        			ciphertext_temp+=ciphertext.charAt(j);
-        		}
-        		plaintext_pro+=des.encrypt(ciphertext_temp, key, "decrypt");
-        }
-        String temp_of_temp="";
-        for (int i = 0; i < plaintext_pro.length()/8; ++i) {
-            temp_of_temp += plaintext_pro.substring(i * 8, (i + 1) * 8);
-          ciphertext_new.append((char) Integer.parseInt(temp_of_temp, 2));
-          temp_of_temp="";
-        }
-        //System.out.println("瑙ｅ瘑锛�" + ciphertext_new);
-        String mydecode = ciphertext_new.toString();
-        mydecode = mydecode.trim();
-        //System.out.println("瑙ｅ瘑锛�" + mydecode);
-        return mydecode;
+    		
+    		DES customDES=new DES();
+    		customDES.generateKeys(key);
+    		byte[] temp = plaintext.getBytes("ISO_8859_1");
+    		byte[] c=customDES.deal(temp,0);
+    		String ans=new String(c,"UTF8");
+    		//System.out.println("明文：\n"+ans);
+    		ans=ans.trim();
+    		return ans;
     }
     
-    public String decode(String ciphertext,String key)
+    public byte[] decode_b(byte[] plaintext_b,String key) throws UnsupportedEncodingException
     {
-    		DES des = new DES();
-
-        		String plaintext_pro="";
-        StringBuffer ciphertext_new = new StringBuffer(); 
-        int res1=ciphertext.length()%8;
-        int res2=ciphertext.length()/8;
-        for(int i=0;i<res2;++i)
-        {
-        		String ciphertext_temp="";
-        		for(int j=i*8;j<(i+1)*8;++j)
-        		{
-        			ciphertext_temp+=ciphertext.charAt(j);
-        		}
-        		plaintext_pro+=des.encrypt(ciphertext_temp, key, "decrypt");
-        }
-        
-        int flag = 0;
-        String temp_of_temp="";
-        for (int i = 0; i < plaintext_pro.length()/8; ++i) {
-            temp_of_temp += plaintext_pro.substring(i * 8, (i + 1) * 8);
-          if(temp_of_temp.charAt(0)!='0'&&flag==0)
-          {
-          		flag=1;
-          		temp_of_temp="0"+temp_of_temp.substring(1,8);
-          		continue;
-          }
-          ciphertext_new.append((char) Integer.parseInt(temp_of_temp, 2));
-          temp_of_temp="";
-          flag=0;
-        }
-        //System.out.println("瑙ｅ瘑锛�" + ciphertext_new);
-        String mydecode = ciphertext_new.toString();
-        mydecode = mydecode.trim();
-        //System.out.println("瑙ｅ瘑锛�" + mydecode);
-        return mydecode;
+    		
+    		DES customDES=new DES();
+    		customDES.generateKeys(key);
+    		byte[] c=customDES.deal(plaintext_b,0);
+    		return c;
     }
     
-    /*public static void main(String[] args) {
-        String plaintext = "鏇�:瀵规垜灏辨槸鐙�";
-        String ciphertext="";
-        String plaintext_after;
-        String key = "";
-        
-		key=Main_key();//瀵嗛挜鐢熸垚
-        ciphertext=encode(plaintext, key);//鍔犲瘑锛堣緭鍏ユ槑鏂囷紝key锛�
-        System.out.println("********************************");
-        plaintext_after=decode(ciphertext,key);//瑙ｅ瘑锛堣緭鍏ュ瘑鏂囷紝key锛�
-		
-    }*/
+    public static void main(String[] args) throws UnsupportedEncodingException{
+        String origin="文钱坤12345678900986432345654321";
+        System.out.println("原文：\n"+origin);
+        DES des=new DES();
+        String key = "zzzzzzzz";
+        String temp = des.encode(origin, key);
+        System.out.println("temp:"+temp);
+        des.decode(temp, key);
 
-    
-    
-    // 1 瀛愬瘑閽ョ敓鎴�
-    public StringBuffer[] getSubKey(String key) {
-        StringBuffer[] subKey = new StringBuffer[16]; // 瀛樺偍瀛愬瘑閽�
 
-        // 1.1 鎶婂瘑閽ヨ浆鎹㈡垚浜岃繘鍒跺瓧绗︿覆
-        StringBuffer keyBinary = new StringBuffer(); //瀛樺偍杞崲鍚庣殑浜岃繘鍒跺瘑閽�
-        for (int i = 0; i < 8; ++i) {
-            StringBuffer mSubKeyTemp = new StringBuffer(Integer.toBinaryString(key.charAt(i)));
-            while (mSubKeyTemp.length() < 8) {
-                mSubKeyTemp.insert(0, 0);
-            }
-            keyBinary.append(mSubKeyTemp);
-        }
+    }
+    /***代码运行结果：
+     * 
+     原文：
+     Android将军->GeneralAndroid->主博客地址：https://blog.csdn.net/android_jiangjun
+     密文：
+     ��Lm����=��� 4�zf4�����zj���}���~Dͪn�B��t���Du��U*e�VxC�̃Ynh\@NH ˙P�Ka�1y~4
+     明文：
+     Android将军->GeneralAndroid->主博客地址：https://blog.csdn.net/android_jiangjun
+     *
+     * **/
 
-        // 1.2閫氳繃PC1缃崲瀵嗛挜
-        StringBuffer substituteKey = new StringBuffer(); // 瀛樺偍PC1缃崲鍚庣殑瀵嗛挜
-        for (int i = 0; i < 56; ++i) {
-            substituteKey.append(keyBinary.charAt(PC1_Table[i] - 1));
-        }
 
-        // 1.3 鍒嗘垚宸﹀彸涓ゅ潡C0鍜孌0
-        StringBuffer C0 = new StringBuffer(); //鍌ㄥ瓨瀵嗛挜宸﹁竟
-        StringBuffer D0 = new StringBuffer(); //鍌ㄥ瓨绉橀挜鍙宠竟
-        C0.append(substituteKey.substring(0, 28));
-        D0.append(substituteKey.substring(28));
-
-        // 1.4 寰幆16杞敓鎴愬瓙瀵嗛挜
-        for (int i = 0; i < 16; ++i) {
-            // 鏍规嵁LOOP_Table寰幆宸︾Щ
-            for (int j = 0; j < LOOP_Table[i]; ++j) {
-                char mTemp;
-                mTemp = C0.charAt(0);
-                C0.deleteCharAt(0);
-                C0.append(mTemp);
-                mTemp = D0.charAt(0);
-                D0.deleteCharAt(0);
-                D0.append(mTemp);
+    /****拆分分组****/
+    public byte[] deal(byte[] p ,int flag){
+        origin_length=p.length;
+        int g_num;
+        int r_num;
+        g_num=origin_length/8;
+        r_num=8-(origin_length-g_num*8);//8不填充
+        byte[] p_padding;
+        /****填充********/
+        if (r_num<8){
+            p_padding=new byte[origin_length+r_num];
+            System.arraycopy(p,0,p_padding,0,origin_length);
+            for(int i=0;i<r_num;i++){
+                p_padding[origin_length+i]=(byte)r_num;
             }
 
-            // 鎶婂乏鍙充袱鍧楀悎骞�
-            StringBuffer C0D0 = new StringBuffer(C0.toString() + D0.toString());
-
-            // 鏍规嵁PC2鍘嬬缉C0D0锛屽緱鍒板瓙瀵嗛挜
-            StringBuffer C0D0Temp = new StringBuffer();
-            for (int j = 0; j < 48; ++j) {
-                C0D0Temp.append(C0D0.charAt(PC2_Table[j] - 1));
-            }
-
-            // 鎶婂瓙瀵嗛挜瀛樺偍鍒版暟缁勪腑
-            subKey[i] = C0D0Temp;
+        }else{
+            p_padding=p;
         }
-        return subKey;
+        g_num=p_padding.length/8;
+        byte[] f_p=new byte[8];
+        byte[] result_data=new byte[p_padding.length];
+        for(int i=0;i<g_num;i++){
+            System.arraycopy(p_padding,i*8,f_p,0,8);
+            System.arraycopy(descryUnit(f_p,sub_key,flag),0,result_data,i*8,8);
+        }
+        if (flag==0){//解密
+            byte[] p_result_data=new byte[p.length];
+            System.arraycopy(result_data,0,p_result_data,0,p.length);
+            return  p_result_data;
+        }
+        return result_data;
+
+    }
+    /**加密**/
+    public byte[] descryUnit(byte[] p,int k[][],int flag){
+        int[] p_bit=new int[64];
+        StringBuilder stringBuilder=new StringBuilder();
+        for(int i=0;i<8;i++){
+            String p_b=Integer.toBinaryString(p[i]&0xff);
+            while (p_b.length()%8!=0){
+                p_b="0"+p_b;
+            }
+            stringBuilder.append(p_b);
+        }
+        String p_str=stringBuilder.toString();
+        for(int i=0;i<64;i++){
+            int p_t=Integer.valueOf(p_str.charAt(i));
+            if(p_t==48){
+                p_t=0;
+            }else if(p_t==49){
+                p_t=1;
+            }else{
+                System.out.println("To bit error!");
+            }
+            p_bit[i]=p_t;
+        }
+        /***IP置换***/
+        int [] p_IP=new int[64];
+        for (int i=0;i<64;i++){
+            p_IP[i]=p_bit[IP[i]-1];
+        }
+        if (flag == 1) { // 加密
+            for (int i = 0; i < 16; i++) {
+                L(p_IP, i, flag, k[i]);
+            }
+        } else if (flag == 0) { // 解密
+            for (int i = 15; i > -1; i--) {
+                L(p_IP, i, flag, k[i]);
+            }
+        }
+        int[] c=new int[64];
+        for(int i=0;i<IP_1.length;i++){
+            c[i]=p_IP[IP_1[i]-1];
+        }
+        byte[] c_byte=new byte[8];
+        for(int i=0;i<8;i++){
+            c_byte[i]=(byte) ((c[8*i]<<7)+(c[8*i+1]<<6)+(c[8*i+2]<<5)+(c[8*i+3]<<4)+(c[8*i+4]<<3)+(c[8*i+5]<<2)+(c[8*i+6]<<1)+(c[8*i+7]));
+        }
+        return c_byte;
+
+
+    }
+    public void L(int[] M, int times, int flag, int[] keyarray){
+        int[] L0=new int[32];
+        int[] R0=new int[32];
+        int[] L1=new int[32];
+        int[] R1=new int[32];
+        int[] f=new int[32];
+        System.arraycopy(M,0,L0,0,32);
+        System.arraycopy(M,32,R0,0,32);
+        L1=R0;
+        f=fFuction(R0,keyarray);
+        for(int j=0;j<32;j++){
+                R1[j]=L0[j]^f[j];
+                if (((flag == 0) && (times == 0)) || ((flag == 1) && (times == 15))) {
+                    M[j] = R1[j];
+                    M[j + 32] = L1[j];
+                }
+                else {
+                    M[j] = L1[j];
+                    M[j + 32] = R1[j];
+                }
+        }
+
     }
 
-    // 2 鍔犲瘑
-    public String encrypt(String plaintext, String key, String type) {
-        StringBuffer ciphertext = new StringBuffer(); 
-        // 2.1 鎶婃槑鏂囪浆鎹㈡垚浜岃繘鍒跺瓧绗︿覆
-        StringBuffer plaintextBinary = new StringBuffer(); // 瀛樺偍鏄庢枃浜岃繘鍒�
-        for (int i = 0; i < 8; ++i) {
-            StringBuffer mSubPlaintextTemp = new StringBuffer(Integer.toBinaryString(plaintext.charAt(i)));
-            while (mSubPlaintextTemp.length() < 8) {
-                mSubPlaintextTemp.insert(0, 0);
+
+
+    public int[] fFuction(int [] r_content,int [] key){
+        int[] result=new int[32];
+        int[] e_k=new int[48];
+        for(int i=0;i<E.length;i++){
+            e_k[i]=r_content[E[i]-1]^key[i];
+        }
+        /********S盒替换:由48位变32位，现分割e_k，然后再进行替换*********/
+        int[][] s=new int[8][6];
+        int[]s_after=new int[32];
+        for(int i=0;i<8;i++){
+            System.arraycopy(e_k,i*6,s[i],0,6);
+            int r=(s[i][0]<<1)+ s[i][5];//横坐标
+            int c=(s[i][1]<<3)+(s[i][2]<<2)+(s[i][3]<<1)+s[i][4];//纵坐标
+            String str=Integer.toBinaryString(S_Box[i][r][c]);
+            while (str.length()<4){
+                str="0"+str;
             }
-            //System.out.println(mSubPlaintextTemp);
-            plaintextBinary.append(mSubPlaintextTemp);
-        }
-        //System.out.println(plaintextBinary.length());
-        // 2.2閫氳繃IP缃崲鏄庢枃
-        StringBuffer substitutePlaintext = new StringBuffer(); 
-        for (int i = 0; i < 64; ++i) {
-            substitutePlaintext.append(plaintextBinary.charAt(IP_Table[i] - 1));
-        }
-
-        // 2.3 鎶婄疆鎹㈠悗鐨勬槑鏂囧垎涓哄乏鍙充袱鍧�
-        StringBuffer L = new StringBuffer(substitutePlaintext.substring(0, 32));
-        StringBuffer R = new StringBuffer(substitutePlaintext.substring(32));
-
-        // 2.4 2.4 寰楀埌瀛愬瘑閽�
-        StringBuffer[] subKey = getSubKey(key);
-        if (type.equals("decrypt")) {
-            StringBuffer[] mTemp = getSubKey(key);
-            for (int i = 0; i < 16; ++i) {
-                subKey[i] = mTemp[15 - i];
-            }
-        }
-
-        // 2.5 杩涜16杞凯浠�
-        for (int i = 0; i < 16; ++i) {
-            StringBuffer mLTemp = new StringBuffer(L); // 锟芥储原锟斤拷锟斤拷锟斤拷锟�
-
-            // 锟斤拷叩牟锟斤拷锟�
-            L.replace(0, 32, R.toString());
-
-            // 锟斤拷E位选锟斤拷锟斤拷锟秸癸拷冶锟�
-            StringBuffer mRTemp = new StringBuffer(); // 锟芥储锟斤拷展锟斤拷锟斤拷冶锟�
-            for (int j = 0; j < 48; ++j) {
-                mRTemp.append(R.charAt(E_Table[j] - 1));
+            for(int j=0;j<4;j++){
+                int p=Integer.valueOf(str.charAt(j));
+                if(p==48){
+                    p=0;
+                }else if(p==49){
+                    p=1;
+                }else{
+                    System.out.println("To bit error!");
+                }
+                s_after[4*i+j]=p;
             }
 
-            // 锟斤拷展锟斤拷锟斤拷冶吆锟斤拷锟斤拷锟皆匡拷锟斤拷
-            for (int j = 0; j < 48; ++j) {
-                if (mRTemp.charAt(j) == subKey[i].charAt(j)) {
-                    mRTemp.replace(j, j + 1, "0");
-                } else {
-                    mRTemp.replace(j, j + 1, "1");
+        }
+        /******S盒替换结束*******/
+        /****P盒替代****/
+        for(int i=0;i<P.length;i++){
+            result[i]=s_after[P[i]-1];
+        }
+        return result;
+
+    }
+
+    /**生成子密钥**/
+    public void generateKeys(String key){
+        while (key.length()<8){
+            key=key+key;
+        }
+        key=key.substring(0,8);
+        byte[] keys=key.getBytes();
+        int[] k_bit=new int[64];
+        //取位值
+        for(int i=0;i<8;i++){
+            String k_str=Integer.toBinaryString(keys[i]&0xff);
+            while(k_str.length()<8)
+            {
+            		k_str="0"+k_str;
+            }
+            if(k_str.length()<8){
+                for(int t=0;t<8-k_str.length();t++){
+                    k_str="0"+k_str;
                 }
             }
-
-            // 锟斤拷锟斤拷S锟斤拷压锟斤拷
-            R.setLength(0);
-            for (int j = 0; j < 8; ++j) {
-                String mSNumber = mRTemp.substring(j * 6, (j + 1) * 6);
-                int row = Integer.parseInt(Character.toString(mSNumber.charAt(0)) + mSNumber.charAt(5), 2);
-                int column = Integer.parseInt(mSNumber.substring(1, 5), 2);
-                int number = S_Box[j][row * 16 + column];
-                StringBuffer numberString = new StringBuffer(Integer.toBinaryString(number));
-                while (numberString.length() < 4) {
-                    numberString.insert(0, 0);
+            for(int j=0;j<8;j++){
+                int p=Integer.valueOf(k_str.charAt(j));
+                if(p==48){
+                    p=0;
+                }else if(p==49){
+                    p=1;
+                }else{
+                    System.out.println("To bit error!");
                 }
-                R.append(numberString);
-            }
-
-            // 锟斤拷压锟斤拷锟斤拷锟絉通锟斤拷P_Table锟矫伙拷
-            StringBuffer mRTemp1 = new StringBuffer(); // 锟芥储锟矫伙拷锟斤拷锟絉
-            for (int j = 0; j < 32; ++j) {
-                mRTemp1.append(R.charAt(P_Table[j] - 1));
-            }
-            R.replace(0, 32, mRTemp1.toString());
-
-            // 锟斤拷锟矫伙拷锟斤拷锟絉锟斤拷锟筋开始锟斤拷L锟斤拷锟�
-            for (int j = 0; j < 32; ++j) {
-                if (R.charAt(j) == mLTemp.charAt(j)) {
-                    R.replace(j, j + 1, "0");
-                } else {
-                    R.replace(j, j + 1, "1");
-                }
+                k_bit[i*8+j]=p;
             }
         }
-
-        // 2.6 鍚堝苟杩唬瀹岀殑L鍜孯
-        StringBuffer LR = new StringBuffer(R.toString() + L.toString());
-
-        // 2.7 鏍规嵁IPR_Table缃崲LR
-        StringBuffer mLRTemp = new StringBuffer(); // 瀛樺偍缃崲鍚庣殑LR
-        for (int i = 0; i < 64; ++i) {
-            mLRTemp.append(LR.charAt(IPR_Table[i] - 1));
+        //k_bit是初始的64位长密钥，下一步开始进行替换
+        /***********PC-1压缩****************/
+        int [] k_new_bit=new int[56];
+        for(int i=0;i<PC1.length;i++){
+            k_new_bit[i]=k_bit[PC1[i]-1];/////这个减1注意点
         }
-        /*****************************************************/
-        
-        // 2.8 鎶婁簩杩涘埗杞负瀛楃涓�
-        String mCharTemp="";
+        /**************************/
+        int[] c0=new int[28];
+        int[] d0=new int[28];
+        System.arraycopy(k_new_bit,0,c0,0,28);
+        System.arraycopy(k_new_bit,28,d0,0,28);
+        for(int i=0;i<16;i++){
+            int[] c1=new int[28];
+            int[] d1=new int[28];
+            if(LFT[i]==1){
+                System.arraycopy(c0,1,c1,0,27);
+                c1[27]=c0[0];
+                System.arraycopy(d0,1,d1,0,27);
+                d1[27]=d0[0];
+            }else if(LFT[i]==2){
+                System.arraycopy(c0,2,c1,0,26);
+                c1[26]=c0[0];
+                c1[27]=c0[1];//这里手残之前写成c1
 
-        if(type.equals("encrypt"))
-        {
-	        for (int i = 0; i < 8; ++i) {
-	            mCharTemp = mLRTemp.substring(i * 8, (i + 1) * 8);
-	            ciphertext.append((char) Integer.parseInt(mCharTemp, 2));
-	        }
+                System.arraycopy(d0,2,d1,0,26);
+                d1[26]=d0[0];
+                d1[27]=d0[1];
+            }else{
+                System.out.println("LFT Error!");
+            }
+            int[] tmp=new int[56];
+            System.arraycopy(c1,0,tmp,0,28);
+            System.arraycopy(d1,0,tmp,28,28);
+            for (int j=0;j<PC2.length;j++){//PC2压缩置换
+                sub_key[i][j]= tmp[PC2[j]-1];
+            }
+            c0=c1;
+            d0=d1;
         }
-        else
-        {
-        	for (int i = 0; i < 8; ++i) {
-	            mCharTemp += mLRTemp.substring(i * 8, (i + 1) * 8);
-	        }
-//	        System.out.println(ciphertext);
-	        ciphertext.append(mCharTemp);
-        }
-        return ciphertext.toString();
+
     }
+
+
 }

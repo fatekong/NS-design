@@ -1,11 +1,13 @@
 package Cpackage;
 
 import java.net.*;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 
@@ -13,7 +15,7 @@ import java.math.BigInteger;
 
 public class Client01 {
 	static final int ASport = 10000;
-	static final int TGSport = 10004;
+	static final int TGSport = 10001;
 	static final int chatVport = 10008;
 	static final int FTPport = 10012;
 	static final int my = 0;
@@ -44,7 +46,7 @@ public class Client01 {
 	//给AS发送的包
 	public HashMap<String, String> ToAS() {
 		HashMap<String, String> toas = new HashMap<String, String>();
-		DES des = new DES();
+		//DES des = new DES();
 		Calendar c = Calendar.getInstance();
 		int month = c.get(Calendar.MONTH);
 		int date = c.get(Calendar.DATE);
@@ -64,7 +66,7 @@ public class Client01 {
 		return toas;
 	}
 	// 给TGS发送的包
-	public HashMap<String, String> ToTGS() {
+	public HashMap<String, String> ToTGS() throws UnsupportedEncodingException {
 		HashMap<String, String> totgs = new HashMap<String, String>();
 		DES des = new DES();
 		/*Calendar c = Calendar.getInstance();
@@ -87,7 +89,7 @@ public class Client01 {
 		return totgs;
 	}
 	//获取AS发过来的信息
-	public void FormAS(HashMap<String, String> fromtgs) {
+	public void FormAS(HashMap<String, String> fromtgs) throws UnsupportedEncodingException {
 		// 先从hashmap中得到未解密的数据
 		String kctgs_beforeDES = fromtgs.get("des_kctgs");
 		System.out.println("解密前的Kctgs:" + kctgs_beforeDES);
@@ -96,21 +98,36 @@ public class Client01 {
 		String TS2_beforeDES = fromtgs.get("TS2");
 		System.out.println("解密前的TS2:" + TS2_beforeDES);
 		String tct_beforeDES = fromtgs.get("ticket_to_tgs_before");
-		System.out.println("解密前的Ticket to tgs:" + tct_beforeDES);
+		byte[] kkk = tct_beforeDES.getBytes("ISO_8859_1");
+		
 		DES des = new DES();
+		byte[] mmm = des.decode_b(kkk, kc);
+		//String tct_beforeDES = new String(des.decode_b(fortgs, kc));
+		System.out.println("解密前的Ticket to tgs:" + tct_beforeDES);
+		
 		kctgs = des.decode(kctgs_beforeDES, kc);
 		System.out.println("解密后的K(c,tgs):" + kctgs);
 		IDtgs = des.decode(IDtgs_beforeDES, kc);
 		System.out.println("解密后的IDtgs:" + IDtgs);
+/*		if(IDtgs.equals("TGS"))
+			System.out.println("ok");*/
 		TS2 = des.decode(TS2_beforeDES, kc);
 		System.out.println("解密后的TS2:" + TS2);
 		
-		Tickettgs = des.decode_pro(tct_beforeDES, kc);
+		Tickettgs = new String(mmm,"ISO_8859_1");
+		byte[] kkk11 = Tickettgs.getBytes("ISO_8859_1");
+		byte[] sss = des.decode_b(kkk11, ktgs);//第二次解密后的密文二级制（明文二进制）
+		String ttt = new String(sss,"UTF8");//第二次解密后的明文String
+		ttt.trim();
+		System.out.println("第二次解密：" + ttt);
+		//Tickettgs = des.decode(tct_beforeDES, kc);
+		//String ttt = new String(des.decode_b(fortgs, kc));
+		//Tickettgs = des.decode(ttt, ktgs);
 		System.out.println("解密后的Ticket：" + Tickettgs);
 	}
 
 	// 获取TGS发过来的信息
-	public void FormTGS(HashMap<String, String> fromtgs) {
+	public void FormTGS(HashMap<String, String> fromtgs) throws UnsupportedEncodingException {
 		// 先从hashmap中得到未解密的数据
 		String kcv_beforeDES = fromtgs.get("K(c,v)");
 		System.out.println("解密前的K(c,v):" + kcv_beforeDES);
@@ -134,7 +151,7 @@ public class Client01 {
 		this.IDv = v;
 	}
 
-	public HashMap<String, String> ToV() {
+	public HashMap<String, String> ToV() throws UnsupportedEncodingException {
 		HashMap<String,String> tov = new HashMap<String,String>();
 		DES des = new DES();
 		Calendar c = Calendar.getInstance();
@@ -162,7 +179,7 @@ public class Client01 {
 		return tov;
 	}
 	
-	public boolean FromV(HashMap<String,String> fromv) {
+	public boolean FromV(HashMap<String,String> fromv) throws UnsupportedEncodingException {
 		String TS5_beforeDES = fromv.get("TS5");
 		DES des = new DES();
 		String TS5_1 = des.decode(TS5_beforeDES, kcv);
@@ -204,7 +221,14 @@ public class Client01 {
 			HashMap<String,String> ToAS = new HashMap<String,String>();
 			ToAS = c1.ToAS();
 			oos.writeObject(ToAS);
+			
 			HashMap<String,String> FromAS = (HashMap<String,String>)ois.readObject();
+			//System.out.println("asassdadsadadadasdadadsafafafad");
+			//DataInputStream in = new DataInputStream(socket.getInputStream());
+			//byte[] fortgs = new byte[40];
+			//int i = in.read(fortgs);
+			//System.out.println(i);
+			//System.out.println();
 			String as_Prelude = FromAS.get("Prelude");
 			while(!as_Prelude.equals(Appoint_Prelude.AS_C)) {
 				oos.writeObject(ToAS);

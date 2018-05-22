@@ -1,8 +1,9 @@
-package FTPpackage;
+package chatV_revision;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * @author generalandroid
@@ -10,6 +11,22 @@ import java.util.Arrays;
  * 根据DES算法原理实现DES加密算法，主要是为了更加深入地理解DES算法
  * **/
 public class DES {
+	public String Main_key()//鐢熸垚浜嗗瘑閽�
+    {
+    		String key="";
+    		int element = 0;
+    		Random random = new Random();
+    		for(int i = 0 ; i < 8 ; i++) {
+    			element = Math.abs(random.nextInt())%79+48;
+//    			System.out.println(element +"," +(char)element);
+    			if(element<58 || (element > 40 && element < 91) || (element > 96 && element < 123)) 
+    				key += (char)element;
+    			else
+    				i--;
+    			//key += (char)element;
+    		}
+    		return key;
+    }
     //初始置换
     private int[] IP={58,50,42,34,26,18,10,2,
                      60,52,44,36,28,20,12,4,
@@ -19,7 +36,7 @@ public class DES {
                      59,51,43,35,27,19,11,3,
                      61,53,45,37,29,21,13,5,
                      63,55,47,39,31,23,15,7};
-    //逆初始置换
+    //逆初始置�?
     private int[] IP_1={40,8,48,16,56,24,64,32,
                        39,7,47,15,55,23,63,31,
                        38,6,46,14,54,22,62,30,
@@ -118,6 +135,7 @@ public class DES {
 //
 //    }
     
+    
     public String encode(String plaintext,String key) throws UnsupportedEncodingException
     {
     		String ans="";
@@ -125,7 +143,7 @@ public class DES {
     		customDES.generateKeys(key);
     		byte[] c=customDES.deal(plaintext.getBytes("UTF8"),1);
     		ans = new String(c,"ISO_8859_1");
-    		System.out.println("密文：\n"+ans);
+    //		System.out.println("密文：\n"+ans);
 //    		ans = ans.trim();
     		return ans;
     }
@@ -147,7 +165,7 @@ public class DES {
     		byte[] temp = plaintext.getBytes("ISO_8859_1");
     		byte[] c=customDES.deal(temp,0);
     		String ans=new String(c,"UTF8");
-    		System.out.println("明文：\n"+ans);
+    		//System.out.println("明文：\n"+ans);
     		ans=ans.trim();
     		return ans;
     }
@@ -162,7 +180,7 @@ public class DES {
     }
     
     public static void main(String[] args) throws UnsupportedEncodingException{
-        String origin="文钱坤12345678900986432345654321";
+        String origin="文钱�?12345678900986432345654321";
         System.out.println("原文：\n"+origin);
         DES des=new DES();
         String key = "zzzzzzzz";
@@ -172,14 +190,14 @@ public class DES {
 
 
     }
-    /***代码运行结果：
+    /***代码运行结果�?
      * 
-     原文：
-     Android将军->GeneralAndroid->主博客地址：https://blog.csdn.net/android_jiangjun
-     密文：
-     ��Lm����=��� 4�zf4�����zj���}���~Dͪn�B��t���Du��U*e�VxC�̃Ynh\@NH ˙P�Ka�1y~4
-     明文：
-     Android将军->GeneralAndroid->主博客地址：https://blog.csdn.net/android_jiangjun
+     原文�?
+     Android将军->GeneralAndroid->主博客地�?：https://blog.csdn.net/android_jiangjun
+     密文�?
+     ��Lm����=���? 4�zf4�����zj�?�?�}���~Dͪn�B��t���Du��U*e�VxC�?̃Ynh\@NH ˙P�Ka�?1y~4
+     明文�?
+     Android将军->GeneralAndroid->主博客地�?：https://blog.csdn.net/android_jiangjun
      *
      * **/
 
@@ -190,7 +208,7 @@ public class DES {
         int g_num;
         int r_num;
         g_num=origin_length/8;
-        r_num=8-(origin_length-g_num*8);//8不填充
+        r_num=8-(origin_length-g_num*8);//8不填�?
         byte[] p_padding;
         /****填充********/
         if (r_num<8){
@@ -299,13 +317,13 @@ public class DES {
         for(int i=0;i<E.length;i++){
             e_k[i]=r_content[E[i]-1]^key[i];
         }
-        /********S盒替换:由48位变32位，现分割e_k，然后再进行替换*********/
+        /********S盒替�?:�?48位变32位，现分割e_k，然后再进行替换*********/
         int[][] s=new int[8][6];
         int[]s_after=new int[32];
         for(int i=0;i<8;i++){
             System.arraycopy(e_k,i*6,s[i],0,6);
-            int r=(s[i][0]<<1)+ s[i][5];//横坐标
-            int c=(s[i][1]<<3)+(s[i][2]<<2)+(s[i][3]<<1)+s[i][4];//纵坐标
+            int r=(s[i][0]<<1)+ s[i][5];//横坐�?
+            int c=(s[i][1]<<3)+(s[i][2]<<2)+(s[i][3]<<1)+s[i][4];//纵坐�?
             String str=Integer.toBinaryString(S_Box[i][r][c]);
             while (str.length()<4){
                 str="0"+str;
@@ -323,8 +341,8 @@ public class DES {
             }
 
         }
-        /******S盒替换结束*******/
-        /****P盒替代****/
+        /******S盒替换结�?*******/
+        /****P盒替�?****/
         for(int i=0;i<P.length;i++){
             result[i]=s_after[P[i]-1];
         }
@@ -332,7 +350,7 @@ public class DES {
 
     }
 
-    /**生成子密钥**/
+    /**生成子密�?**/
     public void generateKeys(String key){
         while (key.length()<8){
             key=key+key;
@@ -340,7 +358,7 @@ public class DES {
         key=key.substring(0,8);
         byte[] keys=key.getBytes();
         int[] k_bit=new int[64];
-        //取位值
+        //取位�?
         for(int i=0;i<8;i++){
             String k_str=Integer.toBinaryString(keys[i]&0xff);
             while(k_str.length()<8)
@@ -364,11 +382,11 @@ public class DES {
                 k_bit[i*8+j]=p;
             }
         }
-        //k_bit是初始的64位长密钥，下一步开始进行替换
+        //k_bit是初始的64位长密钥，下�?步开始进行替�?
         /***********PC-1压缩****************/
         int [] k_new_bit=new int[56];
         for(int i=0;i<PC1.length;i++){
-            k_new_bit[i]=k_bit[PC1[i]-1];/////这个减1注意点
+            k_new_bit[i]=k_bit[PC1[i]-1];/////这个�?1注意�?
         }
         /**************************/
         int[] c0=new int[28];

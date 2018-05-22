@@ -28,11 +28,13 @@ public class Cchatthread extends Thread {
 			try {
 				ServerSocket Servers = new ServerSocket(portnum_in);
 				Socket Sockets = Servers.accept();
+				System.out.println("in连接成功！");
 				InputStream in = Sockets.getInputStream();
 				ObjectInputStream ois = new ObjectInputStream(in);
 				while (true) {
 					@SuppressWarnings("unchecked")
 					HashMap<String, String> fromclient = (HashMap<String, String>) ois.readObject();
+					System.out.println("接收到信息");
 					String Prelude = fromclient.get("Prelude");
 					System.out.println("Prelude:" + Prelude);
 					if (Prelude.equals(Appoint_Prelude.V_C_chat)) {
@@ -66,11 +68,12 @@ public class Cchatthread extends Thread {
 					Thread.sleep(1000);
 				}
 			} catch (IOException | ClassNotFoundException | InterruptedException e) {
-				System.out.println("错误");
+				System.out.println("错误in");
 			}
 		} else if (flag.equals("out")) {
 			try {
-				Socket socket = new Socket(Client04.chatV_IP, portnum_out);
+				Socket socket = new Socket(Client01.chatV_IP, portnum_out);
+				System.out.println("out连接成功！");
 				OutputStream out = socket.getOutputStream();
 				ObjectOutputStream oos = new ObjectOutputStream(out);
 				int i = 0;
@@ -130,7 +133,7 @@ public class Cchatthread extends Thread {
 				}
 
 			} catch (IOException | InterruptedException e) {
-				System.out.println("错误");
+				System.out.println("错误out");
 			}
 		}
 	}

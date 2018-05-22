@@ -80,7 +80,11 @@ public class Cftpthread extends Thread {
 	                	if(FromFTP.get("Prelude").equals(Appoint_Prelude.V_C_ftp_file)) {
 	                		int read = 0;
 	                		read = dis.read(bytes);
-	                		
+	                		//String s = new String(bytes);
+	                		bytes = des.encode_b(bytes, Client01.kcv);
+	                		//String s1 = des.encode(s, Client01.kcv);
+	                		//String s2 = des.decode(s1, Client01.kcv);
+	                		//System.out.println("文件的内容是  "+s2);
 	                		/*String frombytes =  new String(bytes);
 	    					if(my == 0) 
 	    						frombytes = des.encode(frombytes, Client01.kcv);
@@ -106,8 +110,10 @@ public class Cftpthread extends Thread {
 		                		System.out.println("send file...");
 		                		toFTP.put("Prelude", Appoint_Prelude.C_V_ftp_file);
 		                		toFTP.put("Flag","continue");
+		                		//toFTP.put("s",s);
 		                		oos.writeObject(toFTP);
-			                    dos.write(bytes, 0, read);  
+			                    dos.write(bytes, 0, read);
+		                		
 			                    dos.flush();
 			                    toFTP.clear();
 		                	}
