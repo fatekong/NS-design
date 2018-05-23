@@ -101,7 +101,7 @@ public class Cchatthread extends Thread {
 					if(my == 0) {
 						Time = des.encode(time, Client01.kcv);
 						user = des.encode(USER, Client01.kcv);
-						CONV = des.encode("high°¡", Client01.kcv);
+						CONV = des.encode("ÎÒÊÇÂÜÀò¿Ø", Client01.kcv);
 						Transfer transfer = new Transfer(Client01.N);
 						Sect = transfer.TransToSec(Client01.MyID, Client01.D);
 						Sect = des.encode(Sect, Client01.kcv);
@@ -128,7 +128,7 @@ public class Cchatthread extends Thread {
 					toclient.put("sect", Sect);
 					toclient.put("hash", Hash);
 					oos.writeObject(toclient);
-					Thread.sleep(2000);
+					Thread.sleep(5000);
 					i++;
 				}
 

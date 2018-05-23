@@ -161,7 +161,7 @@ public class DES {
     		return c;
     }
     
-    public static void main(String[] args) throws UnsupportedEncodingException{
+    /*public static void main(String[] args) throws UnsupportedEncodingException{
         String origin="文钱坤12345678900986432345654321";
         System.out.println("原文：\n"+origin);
         DES des=new DES();
@@ -171,7 +171,7 @@ public class DES {
         des.decode(temp, key);
 
 
-    }
+    }*/
     /***代码运行结果：
      * 
      原文：

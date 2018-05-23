@@ -48,6 +48,7 @@ public class Vchatthread extends Thread {
 					System.out.println("in∆Ù∂Ø≥…π¶");
 					Socket Sockets = Servers.accept();
 					Serv = Servers;
+					Servers.close();
 					Sock = Sockets;
 					InputStream in = Sockets.getInputStream();
 					ObjectInputStream ois = new ObjectInputStream(in);
@@ -149,12 +150,13 @@ public class Vchatthread extends Thread {
 						
 						DES des = new DES();
 						//for (int i = chatV.pre[my]; i < chatV.queue.size(); i++) {
-						for (int i = chatV.pre.get(SOCKET_IP); i < chatV.queue.size(); i++) {
-							synchronized (chatV.queue) {
+						int size = chatV.queue.size();
+						for (int i = chatV.pre.get(SOCKET_IP); i < size; i++) {
+							//synchronized (chatV.queue) {
 								HashMap<String, String> toclient = new HashMap<String, String>();
 								//chatV.pre[my]++;
-								int p = chatV.pre.get(SOCKET_IP);
-								chatV.pre.put(SOCKET_IP, p+1);
+								//int p = chatV.pre.get(SOCKET_IP);
+								//chatV.pre.put(SOCKET_IP, p+1);
 								//System.out.println(portnum + " " + chatV.pre[my] + " " + i);
 								toclient.put("Prelude", Appoint_Prelude.V_C_chat);
 								/*toclient.put("time", des.encode(chatV.queue.get(i).GetTime(), chatV.kcv[my]));
@@ -167,10 +169,11 @@ public class Vchatthread extends Thread {
 								System.out.println(portnum + ":" + chatV.queue.get(i).GetConv());
 								oos.writeObject(toclient);
 								//System.out.println("1111");
-								Thread.sleep(1000);
+								Thread.sleep(2000);
 								System.out.println("------------------------");
-							}
+							//}
 						}
+						chatV.pre.put(SOCKET_IP, size);
 						//System.out.println("222");
 					//}
 					// socket.close();

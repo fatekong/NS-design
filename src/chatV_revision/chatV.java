@@ -199,9 +199,8 @@ public class chatV {
 			String ip = Socket.getInetAddress().toString();
 			//String ip = "127.0.0.1";
 			System.out.println(" ’µΩ£∫" +ip);
-			//if(ip == "/127.0.0.1")
-				ip = "127.0.0.1";
-				
+			String[] ipp = ip.split("/");
+				ip = ipp[1];
 			if(pre.get(ip)==null)
 				pre.put(ip, 0);
 			table.put(ip, "true");

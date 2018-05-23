@@ -19,7 +19,7 @@ import java.util.HashMap;
 public class Cftpthread extends Thread {
 	int portnum;
 	int my;
-	String ftp_IP = "127.0.0.1";
+	//String ftp_IP = "127.0.0.1";
 	String model = "";// upload是上传，download是下载
 	int portnum_in;
 	int portnum_out;
@@ -44,7 +44,7 @@ public class Cftpthread extends Thread {
 		if (model.equals("upload")) {
 			try {
 				String filepath = "D:\\TestforNS-design\\NS.txt";
-				Socket socket = new Socket(ftp_IP, portnum_out);
+				Socket socket = new Socket(Client01.FTP_IP, portnum_out);
 				HashMap<String, String> ToFTP = new HashMap<String, String>();
 				ToFTP.put("Prelude", Appoint_Prelude.C_V_ftp_name);
 				DES des = new DES();
@@ -68,7 +68,6 @@ public class Cftpthread extends Thread {
 				String ftp_Prelude = FromFTP.get("Prelude");
 				if(ftp_Prelude.equals(Appoint_Prelude.V_C_ftp_upload)) {
 					byte[] bytes = new byte[1024];
-					
 	                DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(filepath)));
 	                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 	                ToFTP.clear();
@@ -136,7 +135,7 @@ public class Cftpthread extends Thread {
 		else if(model.equals("download")) {
 			try {
 				String filepath = "D:\\TestforNS-design";
-				Socket Sockets = new Socket(ftp_IP, portnum_in);
+				Socket Sockets = new Socket(Client01.FTP_IP, portnum_in);
 				OutputStream os = Sockets.getOutputStream();
 				ObjectOutputStream oos = new ObjectOutputStream(os);
 				HashMap<String,String> toFTP = new HashMap<String,String>();

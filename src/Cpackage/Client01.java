@@ -20,11 +20,11 @@ public class Client01 {
 	static final int FTPport = 10012;
 	static final int my = 0;
 	static final String MyName = "•×";
-	public static final String AS_IP = "127.0.0.1";
-	public static final String TGS_IP = "127.0.0.1";
-	public static final String chatV_IP = "127.0.0.1";
-	public static final String FTP_IP = "127.0.0.1";
-	public static final String My_IP = "127.0.0.1";
+	public static final String AS_IP = "192.168.0.146";
+	public static final String TGS_IP = "192.168.0.146";
+	public static final String chatV_IP = "192.168.0.146";
+	public static final String FTP_IP = "192.168.0.146";
+	public static final String My_IP = "192.168.0.146";
 	//private String IDv = "chatV";//FTP or chatV
 	private String IDv = "FTP";
 	private String IDtgs = "TGS";
@@ -208,9 +208,9 @@ public class Client01 {
 	@SuppressWarnings("unchecked")
 	public static void main(String args[]) throws ClassNotFoundException {
 		try {
-			//String V = "chatV";
+			String V = "chatV";
 			
-			String V = "FTP";
+			//String V = "FTP";
 			Client01 c1 = new Client01(V);
 			Socket socket = new Socket(AS_IP,ASport);
 			OutputStream os = socket.getOutputStream();

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+
 class FTPVThread extends Thread {
 	public static final String SERVER_IP = "127.0.0.1";
 	int portnum;
@@ -169,8 +170,8 @@ public class FTP {
 			String ip = Socket.getInetAddress().toString();
 			//String ip = "127.0.0.1";
 			System.out.println(" ’µΩ£∫" +ip);
-			//if(ip == "/127.0.0.1")
-				ip = "127.0.0.1";
+			String[] ipp = ip.split("/");
+				ip = ipp[1];
 			//ASThread forclient1 = new ASThread(10000);
 			//forclient1.start();
 			executor.execute(new FTPVThread(port,ip,Socket));

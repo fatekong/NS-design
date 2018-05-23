@@ -29,6 +29,12 @@ class ASThread extends Thread{
 				while(true) {
 				Socket Sockets = Servers.accept();
 				System.out.println("Sockets.getInetAddress() : " + Sockets.getInetAddress());//获取请求服务端的ip地址
+				//if(Sockets.getInetAddress().toString().equals("/127.0.0.1")) {
+					String ip = Sockets.getInetAddress().toString();
+					String ipp[] = ip.split("/");
+					System.out.println(ipp[1]);
+				//}
+					
 				System.out.println("Sockets.getLocalAddress() : " + Sockets.getLocalAddress());
 				System.out.println("Sockets.getLocalAddress() : "+Sockets.getLocalAddress().getHostAddress() );
 				OutputStream os = Sockets.getOutputStream();

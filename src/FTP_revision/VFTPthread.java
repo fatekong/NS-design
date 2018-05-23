@@ -46,8 +46,9 @@ public class VFTPthread extends Thread {
 		if(model.equals("download")) {
 			try {
 				String filepath = FTP.FilePath;
-				Servers = new ServerSocket(portnum_in);
-				Sockets = Servers.accept();
+				ServerSocket Server = new ServerSocket(portnum_in);
+				Sockets = Server.accept();
+				Server.close();
 				InputStream is = Sockets.getInputStream();
 				ObjectInputStream ois = new ObjectInputStream(is);
 				HashMap<String,String> formclient = (HashMap<String, String>) ois.readObject();
@@ -111,7 +112,7 @@ public class VFTPthread extends Thread {
 					}
 					fos.flush();
 					fos.close();
-					Servers.close();
+					//Servers.close();
 					Sockets.close();
 					System.out.println("½áÊø");
 				}
@@ -119,7 +120,7 @@ public class VFTPthread extends Thread {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				try {
-					Servers.close();
+					//Servers.close();
 					Sockets.close();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
@@ -131,8 +132,9 @@ public class VFTPthread extends Thread {
 		else if(model.equals("upload")) {
 			try {
 				String filepath = FTP.FilePath;
-				Servers = new ServerSocket(portnum_out);
-				Sockets = Servers.accept();
+				ServerSocket Server = new ServerSocket(portnum_out);
+				Sockets = Server.accept();
+				Server.close();
 				InputStream is = Sockets.getInputStream();
 				ObjectInputStream ois = new ObjectInputStream(is);
 				HashMap<String,String> fromclient = (HashMap<String, String>) ois.readObject();
