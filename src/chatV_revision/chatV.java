@@ -8,6 +8,7 @@ import java.util.Vector;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+
 class chatVThread extends Thread {
 	//public static final String SERVER_IP = "127.0.0.1";
 	int my;
@@ -102,13 +103,16 @@ class chatVThread extends Thread {
 		try {
 			while (true) {
 				System.out.println("run " + portnum);
+				chatV.Vshow.SetTex("run：" + portnum);
 				//ServerSocket Servers = new ServerSocket(portnum);
 				//Sockets = Servers.accept();
 				System.out.println("accept:" + portnum);
+				chatV.Vshow.SetTex("accept：" + portnum);
 				InputStream in = Sockets.getInputStream();
 				ObjectInputStream ois = new ObjectInputStream(in);
 				OutputStream os = Sockets.getOutputStream();
 				ObjectOutputStream oos = new ObjectOutputStream(os);
+				chatV.Vshow.SetTex("waiting...");
 				System.out.println("waiting...");
 				@SuppressWarnings("unchecked")
 				HashMap<String, String> fromclient = (HashMap<String, String>) ois.readObject();
@@ -120,6 +124,8 @@ class chatVThread extends Thread {
 						chatV.state.put(MY_IP, 1);
 						chatV.exit.put(MY_IP, "true");
 						chatV.kcv.put(MY_IP, kcv);
+						chatV.Vshow.SetTex("kcv：" + kcv );
+						//chatV.UserName.put(MY_IP, IDc);
 						/*if (portnum == 10008) {
 							chatV.state[0] = 1;
 							chatV.exit[0] = true;
@@ -145,6 +151,7 @@ class chatVThread extends Thread {
 						toclient = packet();
 						oos.writeObject(toclient);
 						System.out.println("write_over");
+						chatV.Vshow.SetTex("进入收发阶段，哈哈哈哈");
 						Vchatthread init = new Vchatthread(portnum, "in", MY_IP);
 						Vchatthread out = new Vchatthread(portnum, "out" ,MY_IP);
 						init.start();
@@ -158,6 +165,7 @@ class chatVThread extends Thread {
 							Thread.sleep(1000);
 						}
 						System.out.println("进入下一循环！");
+						chatV.Vshow.SetTex("进入下一循环！");
 					}
 				}
 
@@ -177,7 +185,7 @@ public class chatV {
 	public static HashMap<String,Integer> state = new HashMap<String,Integer>();
 	//public static boolean exit[] = { false, false, false, false };
 	public static HashMap<String,String> exit = new HashMap<String,String>();
-	public static HashMap<String,String> table = new HashMap<String,String>();
+	//public static HashMap<String,String> table = new HashMap<String,String>();
 	
 	//public static String[] kcv = new String[4];
 	public static HashMap<String,String> kcv = new HashMap<String,String>();//通过IP对应私钥
@@ -185,25 +193,32 @@ public class chatV {
 	public static int port = 10008;
 	public static HashMap<String,String> RSA_E = new HashMap<String,String>();
 	public static HashMap<String,String> RSA_N = new HashMap<String,String>();
+	public static Vector<String> UserName = new Vector<String>();
 	//public static String[] RSA_E = new String[4];
 	//public static String[] RSA_N = new String[4]; 
-	
+	public static boolean sign = false;//开启信息
+	static chatVshow Vshow ;
 	@SuppressWarnings("resource")
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
+		Vshow = new chatVshow();
 		ServerSocket Server = null;
 		Socket Socket = null;
 		Server = new ServerSocket(port);
 		Executor executor = Executors.newFixedThreadPool(4);
+		while(sign == false) {
+			Thread.sleep(1000);
+		}
 		while(true) {
 			Socket = Server.accept();
 			String ip = Socket.getInetAddress().toString();
 			//String ip = "127.0.0.1";
 			System.out.println("收到：" +ip);
+			Vshow.SetTex("收到：" + ip);
 			String[] ipp = ip.split("/");
 				ip = ipp[1];
 			if(pre.get(ip)==null)
 				pre.put(ip, 0);
-			table.put(ip, "true");
+			//table.put(ip, "true");
 			//ASThread forclient1 = new ASThread(10000);
 			//forclient1.start();
 			executor.execute(new chatVThread(Socket,ip));
