@@ -8,7 +8,7 @@ import java.util.*;
 public class Client01 {
 	static final int ASport = 10000;
 	static final int TGSport = 10004;
-	public static final String AS_IP = "127.0.0.1";
+	public static final String AS_IP = "192.168.1.125";
 	public static final String TGS_IP = "127.0.0.1";
 	public static final String chatV_IP = "127.0.0.1";
 	public static final String FTPV_IP = "127.0.0.1";

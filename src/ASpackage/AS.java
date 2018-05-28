@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 class ASThread extends Thread{
 	//public static final String SERVER_IP = "127.0.0.1";
 	int portnum;
-	String ADc="China";
+	String ADc="";
 	static String kc = "12345678";
 	String kctgs = "";
 	static String ktgs = "bbbbbbbb";
@@ -25,6 +25,10 @@ class ASThread extends Thread{
 				//ServerSocket Servers = new ServerSocket(portnum);
 				//while(true) {
 				//Socket Sockets = Servers.accept();
+				ADc = Sockets.getInetAddress().toString();
+				String[] ip = ADc.split("/");
+				ADc = ip[1];
+				System.out.println("ADc"+ADc);
 				OutputStream os = Sockets.getOutputStream();
 				ObjectOutputStream oos =new ObjectOutputStream(os);
 				InputStream in =Sockets.getInputStream();

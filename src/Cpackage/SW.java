@@ -15,10 +15,14 @@ public class SW extends JFrame {
 	JFrame f = new JFrame("聊天室");
 	JButton button1 = new JButton("连接");
 	JButton button2 = new JButton("发送");
+	JButton button3 = new JButton("断开");
 	final JTextArea ta2 = new JTextArea();
 	final JTextArea ta3 = new JTextArea();
 	final JTextArea ta4 = new JTextArea();
 	final JTextArea ta5 = new JTextArea();
+	JScrollPane jsp3 = new JScrollPane(ta3);
+	JScrollPane jsp4 = new JScrollPane(ta4);
+	JScrollPane jsp5 = new JScrollPane(ta5);
 	final JLabel label1 = new JLabel("服务器：");
 	final JLabel label2 = new JLabel("用户名：");
 	final JLabel label3 = new JLabel("在线用户");
@@ -27,7 +31,7 @@ public class SW extends JFrame {
 	final JLabel label5 = new JLabel("************************************************信息发送区******************************************************************");
 	Container contentPane = f.getContentPane();
 	JComboBox comboBox1 = new JComboBox();
-	String[] na= {"192.168.0.144","172.31.18.172"};
+	String[] na= {"192.168.0.144","172.31.18.172","192.168.1.100"};
 	JComboBox comboBox2 = new JComboBox(na);
 
 	public SW() {
@@ -38,15 +42,21 @@ public class SW extends JFrame {
 		comboBox2.setBounds(360, 30, 120, 20);
 		contentPane.add(comboBox2);
 		ta2.setBounds(230, 30, 70, 20);//用户名
-		ta3.setBounds(150, 110, 350, 200);//消息显示
+		/*ta3.setBounds(150, 110, 350, 200);//消息显示
 		ta4.setBounds(20, 110, 100, 200);//在线用户
 		ta5.setBounds(20, 350, 450, 40);//信息发送
+*/		
+		jsp3.setBounds(150, 110, 350, 200);
+		jsp3.setVerticalScrollBarPolicy( JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		jsp4.setBounds(20, 110, 100, 200);
+		jsp5.setBounds(20, 350, 450, 40);
+		contentPane.add(jsp3);
+		contentPane.add(jsp4);
+		contentPane.add(jsp5);
 		contentPane.add(ta2);
-		contentPane.add(ta3);
-		contentPane.add(ta4);
-		contentPane.add(ta5);
-		button1.setBounds(500, 30, 70, 40);
+		button1.setBounds(530, 30, 70, 40);
 		button2.setBounds(500, 350, 70, 40);
+		button3.setBounds(530, 80, 70, 40);
 		label1.setBounds(30, 15, 150, 50);
 		label2.setBounds(170, 15, 150, 50);
 		label3.setBounds(30, 65, 150, 50);
@@ -61,6 +71,7 @@ public class SW extends JFrame {
 		contentPane.add(label6);
 		contentPane.add(button1);
 		contentPane.add(button2);
+		contentPane.add(button3);
 		ta2.setLineWrap(true);
 		ta2.setWrapStyleWord(true);
 		ta3.setLineWrap(true);
@@ -78,6 +89,8 @@ public class SW extends JFrame {
 				Client01.sign = true;
 				UN=ta2.getText();//获取用户名
 				IP=(String)comboBox2.getSelectedItem();//获取IP地址
+				Client01.break_internet = true;
+				Client01.thread_sign = true;
 				//System.out.println(UN);
 			}
 		});
@@ -85,6 +98,16 @@ public class SW extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				IO = ta5.getText();
 				Client01.infor = true;
+				//System.out.println(IO);
+				//SetInfo(GetInformation());
+				//ClearInto();
+				//System.out.println("button"+IO);
+			}
+		});
+		button3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				button1.setText("续连");
+				Client01.thread_sign = false;
 				//System.out.println(IO);
 				//SetInfo(GetInformation());
 				//ClearInto();
@@ -110,6 +133,7 @@ public class SW extends JFrame {
 	
 	public void SetInfo(String s) {
 		ta3.append(s+"\n");
+		ta3.setCaretPosition(ta3.getDocument().getLength());
 	}
 	
 	public String GetUserName() {
@@ -123,6 +147,15 @@ public class SW extends JFrame {
 	public String GetInformation() {
 		//System.out.println(IO);
 		return IO;
+	}
+	
+	public void ClearInfor() {
+		if(Client01.thread_sign) {
+			IO = "";
+			
+		}
+		else
+			SetInfo("网络中断，无法发送："+IO);
 	}
 	
 	/*public static void main(String args[]) throws IOException {

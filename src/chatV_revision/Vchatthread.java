@@ -103,7 +103,7 @@ public class Vchatthread extends Thread {
 								ci.SetTime(Time);
 								ci.SetUser(User);
 								chatV.queue.add(ci);
-								Thread.sleep(1000);
+								Thread.sleep(500);
 							}
 						} else if (Prelude.equals(Appoint_Prelude.C_V_chatcut)) {
 							chatV.state.put(SOCKET_IP, 0);
@@ -175,7 +175,7 @@ public class Vchatthread extends Thread {
 						}
 						// while (chatV.state[my] == 1 && chatV.pre[my] == chatV.queue.size()) {
 						while (chatV.state.get(SOCKET_IP) == 1 && chatV.pre.get(SOCKET_IP) == chatV.queue.size()) {
-							Thread.sleep(1000);
+							Thread.sleep(500);
 						}
 
 						// System.out.println(portnum + ":" + chatV.pre[my]);

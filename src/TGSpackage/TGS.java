@@ -20,7 +20,8 @@ class TGSThread extends Thread {
 	public String kctgs;
 	public String IDc;
 	public String kcv;
-	public String ADc;
+	public String cADc;
+	private String ADc;
 	public String IDtgs;
 	public String TS2;
 	public String TS3;
@@ -63,8 +64,8 @@ class TGSThread extends Thread {
 		IDc = ticket_pro[1];// C的ID号
 		System.out.println("IDc: "+IDc);
 		//TGS.tgshow.SetTex("IDc：" + IDc + "\n");
-		ADc = ticket_pro[2];//
-		System.out.println("ADc: "+ADc);
+		cADc = ticket_pro[2];//
+		System.out.println("cADc: "+cADc);
 		//TGS.tgshow.SetTex("ADc：" + ADc + "\n");
 		IDtgs = ticket_pro[3];// TGS的ID号
 		System.out.println("IDtgs: "+IDtgs);
@@ -88,8 +89,8 @@ class TGSThread extends Thread {
 		String[] Authenticator_pro = Authenticator_M.split("-");// Authenticators拆包
 		IDc = Authenticator_pro[0];
 		System.out.println("IDc: "+IDc);
-		ADc = Authenticator_pro[1];
-		System.out.println("ADc: "+ADc);
+		cADc = Authenticator_pro[1];
+		System.out.println("cADc: "+cADc);
 		TS3 = Authenticator_pro[2];
 		System.out.println("TS3: "+TS3);
 		TGS.tgshow.SetTex("*****************************************\n");
@@ -111,8 +112,8 @@ class TGSThread extends Thread {
 		//TGS.tgshow.SetTex("TS4：" + TS4 + "\n");
 		// Ticketv
 		LifeTime4 = Integer.parseInt(LifeTime2)+"";
-		ADc = "china";
-		String Ticket_beforeDES = kcv + "-" + IDc + "-" + ADc + "-" + IDv + "-" + TS4 + "-" + LifeTime4;
+		//ADc = "china";
+		String Ticket_beforeDES = kcv + "-" + IDc + "-" + cADc + "-" + IDv + "-" + TS4 + "-" + LifeTime4;
 		System.out.println("Ticket: "+Ticket_beforeDES);
 		
 		String Ticketv = des.encode(Ticket_beforeDES, kv);
@@ -138,6 +139,9 @@ class TGSThread extends Thread {
 			//ServerSocket Servers = new ServerSocket(portnum);
 			//while (true) {
 				//Socket Sockets = Servers.accept();
+				ADc = Sockets.getInetAddress().toString();
+				String[] ip = ADc.split("/");
+				ADc = ip[1];
 				OutputStream os = Sockets.getOutputStream();
 				ObjectOutputStream oos = new ObjectOutputStream(os);
 				InputStream in = Sockets.getInputStream();
@@ -146,11 +150,13 @@ class TGSThread extends Thread {
 				HashMap<String, String> fromclient = (HashMap<String, String>) ois.readObject();
 				System.out.println("portnum:" + portnum);
 				unpacked(fromclient);
+				//System.out.println("cADc：" + cADc);
 				Calendar c = Calendar.getInstance();
 				int month = c.get(Calendar.MONTH);
 				int date = c.get(Calendar.DATE);
 				int hour = c.get(Calendar.HOUR_OF_DAY);
 				int minute = c.get(Calendar.MINUTE);
+				
 				HashMap<String, String> toclient = new HashMap<String, String>();
 				System.out.println(TS2);
 				String[] ts = TS2.split("\\.");
@@ -159,8 +165,10 @@ class TGSThread extends Thread {
 						&& hour == Integer.parseInt(ts[2])) {
 					System.out.println("时间正确！");
 					if (minute - Integer.parseInt(ts[3]) < 1) {
-						if (!ADc.equals("china"))// 检查首部数据如果有误返回错误信息重新开始监听
+						if (!ADc.equals(cADc))// 检查首部数据如果有误返回错误信息重新开始监听
 						{
+							System.out.println("ADc："+ ADc);
+							System.out.println("cADc：" + cADc);
 							toclient.put("Prelude", Appoint_Prelude.TGS_C_error);
 							System.out.println("ADc验证失败！");
 							toclient.put("error", "ADc验证失败");

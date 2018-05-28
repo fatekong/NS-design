@@ -71,7 +71,7 @@ class chatVThread extends Thread {
 		String IDca = authtc[0];
 		String ADca = authtc[1];
 		TS5 = authtc[2];
-		if (IDca.equals(IDce) && ADca.equals(ADce) && ADca.equals("china")) {
+		if (IDca.equals(IDce) && ADca.equals(ADce) && ADca.equals(MY_IP)) {
 			IDc = IDca;
 			ADc = ADca;
 			Calendar c = Calendar.getInstance();

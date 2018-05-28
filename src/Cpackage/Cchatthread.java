@@ -13,6 +13,12 @@ public class Cchatthread extends Thread {
 	int portnum_out;
 	int portnum;
 	private String USER = "";
+	private ServerSocket Ser;
+	private Socket Soc;
+	private ObjectOutputStream oos = null;
+	private OutputStream out = null;
+	private InputStream in = null;
+	private ObjectInputStream ois = null;
 
 	public Cchatthread(int port, int m, String f, String u) {
 		this.my = m;
@@ -23,14 +29,20 @@ public class Cchatthread extends Thread {
 		this.USER = u;
 	}
 
+	public void breaksoc() throws IOException {
+		// Ser.close();
+		Soc.close();
+	}
+
 	public void run() {
 		if (flag.equals("in")) {
 			try {
-				ServerSocket Servers = new ServerSocket(portnum_in);
-				Socket Sockets = Servers.accept();
+				Ser = new ServerSocket(portnum_in);
+				Soc = Ser.accept();
+				Ser.close();
 				System.out.println("in连接成功！");
-				InputStream in = Sockets.getInputStream();
-				ObjectInputStream ois = new ObjectInputStream(in);
+				in = Soc.getInputStream();
+				ois = new ObjectInputStream(in);
 				while (true) {
 					@SuppressWarnings("unchecked")
 					HashMap<String, String> fromclient = (HashMap<String, String>) ois.readObject();
@@ -52,7 +64,7 @@ public class Cchatthread extends Thread {
 						User = des.decode(User_beforeDES, Client01.kcv);
 						Conv = des.decode(Conv_beforeDES, Client01.kcv);
 						Name = des.decode(Name_beforeDES, Client01.kcv);
-						//System.out.println(Name);
+						// System.out.println(Name);
 						String[] Names = Name.split("-");
 						// }
 						/*
@@ -70,25 +82,36 @@ public class Cchatthread extends Thread {
 						System.out.println(Name);
 						System.out.println("----------------------------------------------");
 					} else if (Prelude.equals(Appoint_Prelude.V_C_chatcut)) {
-						Servers.close();
+						// Ser.close();
+						Soc.close();
 						Appoint_Client.state[my] = 0;
 						break;
 					}
 					Thread.sleep(1000);
 				}
+				// Client01.sw.SetInfo("不能接收");
 			} catch (IOException | ClassNotFoundException | InterruptedException e) {
+				try {
+					//in.close();
+					//ois.close();
+					Soc.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				System.out.println("错误in");
+				Client01.sw.SetInfo("不能接收");
 			}
 		} else if (flag.equals("out")) {
 			try {
-				Socket socket = new Socket(Client01.chatV_IP, portnum_out);
+				Soc = new Socket(Client01.chatV_IP, portnum_out);
 				System.out.println("out连接成功！");
-				OutputStream out = socket.getOutputStream();
-				ObjectOutputStream oos = new ObjectOutputStream(out);
+				out = Soc.getOutputStream();
+				oos = new ObjectOutputStream(out);
 				int i = 0;
 				while (true) {
 					if (Appoint_Client.state[my] == 0) {
-						socket.close();
+						Soc.close();
 						break;
 					}
 					System.out.println("send。。。");
@@ -107,22 +130,26 @@ public class Cchatthread extends Thread {
 					String Sect = "";
 					DES des = new DES();
 					MyHash myHash = new MyHash();
-					if (my == 0) {
-						Time = des.encode(time, Client01.kcv);
-						user = des.encode(USER, Client01.kcv);
-						while (!Client01.infor) {
-							Thread.sleep(500);
-						}
-						Client01.infor = false;
-						String label = Client01.sw.GetInformation();
+					// if (my == 0) {
+					Time = des.encode(time, Client01.kcv);
+					user = des.encode(USER, Client01.kcv);
+					while (!Client01.infor) {
+						Thread.sleep(500);
+					}
+					Client01.infor = false;
+					String label = "";
+					if (Client01.thread_sign != false) {
+						label = Client01.sw.GetInformation();
+						//System.out.println("等待输入......");
 						Client01.sw.ClearInto();
+						Client01.sw.ClearInfor();
 						CONV = des.encode(label, Client01.kcv);
-
 						Transfer transfer = new Transfer(Client01.N);
 						Sect = transfer.TransToSec(Client01.MyID, Client01.D);
 						Sect = des.encode(Sect, Client01.kcv);
 						Hash = myHash.MD5(Client01.MyID);
 					}
+					// }
 					/*
 					 * else if (my == 3) { des.encode(time, Client04.kcv); des.encode(USER,
 					 * Client04.kcv); CONV = des.encode("我是萝莉控", Client04.kcv); } else if (my == 2)
@@ -131,18 +158,30 @@ public class Cchatthread extends Thread {
 					 * Client02.kcv); des.encode(USER, Client02.kcv); CONV = des.encode("地大杜兰特",
 					 * Client02.kcv); }
 					 */
+
 					toclient.put("time", Time);
 					toclient.put("user", user);
 					toclient.put("conv", CONV);
 					toclient.put("sect", Sect);
 					toclient.put("hash", Hash);
 					oos.writeObject(toclient);
-					Thread.sleep(5000);
+					Thread.sleep(1000);
 					i++;
 				}
-
+				// Client01.sw.SetInfo("不能发送");
 			} catch (IOException | InterruptedException e) {
+				
 				System.out.println("错误out");
+				Client01.sw.SetInfo("不能发送");
+				try {
+					//out.close();
+					//oos.close();
+					Soc.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
 			}
 		}
 	}
