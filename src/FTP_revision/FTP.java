@@ -65,8 +65,9 @@ class FTPVThread extends Thread {
 		String IDca = authtc[0];
 		String ADca = authtc[1];
 		TS5 = authtc[2];
-		if (IDca.equals(IDce) && ADca.equals(ADce) && ADca.equals("china")) {
+		if (IDca.equals(IDce) && ADca.equals(ADce) && ADca.equals(ADc)) {
 			System.out.println("IDc和ADc没问题");
+			FTP.ftpshow.SetTex("IDc和ADc没问题\n");
 			IDc = IDca;
 			ADc = ADca;
 			Calendar c = Calendar.getInstance();
@@ -80,6 +81,7 @@ class FTPVThread extends Thread {
 					&& hour == Integer.parseInt(ts1[2]) && month == Integer.parseInt(ts2[0])
 					&& date == Integer.parseInt(ts2[1]) && hour == Integer.parseInt(ts2[2])) {
 				System.out.println("时间没问题");
+				FTP.ftpshow.SetTex("时间没问题\n");
 				if (minute - Integer.parseInt(ts1[3]) < 2 && minute - Integer.parseInt(ts2[3]) < 1) {
 
 					if (IDv.equals(FTP.MyID) && Integer.parseInt(LifeTime) > 1) {
@@ -109,6 +111,9 @@ class FTPVThread extends Thread {
 			while (true) {
 				//ServerSocket Servers = new ServerSocket(portnum);
 				//Socket Sockets = Servers.accept();
+				ADc = Sockets.getInetAddress().toString();
+				String ip[] = ADc.split("/");
+				ADc = ip[1];
 				InputStream in = Sockets.getInputStream();
 				ObjectInputStream ois = new ObjectInputStream(in);
 				OutputStream os = Sockets.getOutputStream();
@@ -121,6 +126,7 @@ class FTPVThread extends Thread {
 					System.out.println(s);
 					if (s == true) {
 						FTP.kcv.put(SOCKET_IP,kcv);
+						System.out.println("kcv:"+kcv);
 						/*if (portnum == 10012) {
 							client_num = 0;
 							FTP.kcv[0] = kcv;
@@ -137,11 +143,11 @@ class FTPVThread extends Thread {
 						HashMap<String, String> toclient = new HashMap<String, String>();
 						toclient = packet();
 						oos.writeObject(toclient);
-						// VFTPthread upload = new VFTPthread("upload", portnum);// C下载V的文件
+						VFTPthread upload = new VFTPthread(portnum, SOCKET_IP, "upload");// C下载V的文件
 						VFTPthread download = new VFTPthread(portnum, SOCKET_IP, "download");// C向V上传文件
-						// upload.start();// C下载V的文件
+						upload.start();// C下载V的文件
 						download.start();// C向V上传文件
-						System.out.println("出来了");
+						//System.out.println("出来了");
 					}
 				}
 				//Servers.close();
@@ -158,11 +164,20 @@ public class FTP {
 	static String MyID = "FTP";
 	static int port = 10012;
 	//static String kcv[] = new String[4];
+	@SuppressWarnings("resource")
+	public static boolean signnn = false;
+	static FTPshow ftpshow ;
 	public static HashMap<String , String> kcv = new HashMap<String,String>();
 	@SuppressWarnings("resource")
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		ServerSocket Server = null;
 		Socket Socket = null;
+		ftpshow = new FTPshow();
+		while(FTP.signnn != true) {
+			Thread.sleep(1000);
+			System.out.println(FTP.signnn);
+		}
+		
 		Server = new ServerSocket(port);
 		Executor executor = Executors.newFixedThreadPool(4);
 		while(true) {

@@ -73,6 +73,7 @@ public class VFTPthread extends Thread {
 						formclient = (HashMap<String, String>) ois.readObject();
 						HashMap<String, String> Toclient = new HashMap<String, String>();
 						System.out.println("等待。。。"+formclient.get("Prelude") + "||" + formclient.get("Flag"));
+						FTP.ftpshow.SetTex("等待。。。"+formclient.get("Prelude") + "||" + formclient.get("Flag")+"\n");
 						//if(formclient.get("Prelude").equals(Appoint_Prelude.C_V_ftp_file))
 							//System.out.println("Prelude没问题" + formclient.get("Prelude") + "," + Appoint_Prelude.C_V_ftp_file);
 						//if(formclient.get("Flag").equals("continue"))
@@ -80,6 +81,7 @@ public class VFTPthread extends Thread {
 						if(formclient.get("Prelude").equals(Appoint_Prelude.C_V_ftp_file) && formclient.get("Flag").equals("continue")) {
 							Toclient.put("Prelude", Appoint_Prelude.V_C_ftp_file);
 							System.out.println("recv file...");
+							FTP.ftpshow.SetTex("recv file...\n");
 							length = dis.read(bytes);
 							String s = formclient.get("s");
 							/*String frombytes = new String(bytes);
@@ -96,11 +98,13 @@ public class VFTPthread extends Thread {
 						}
 						else if(formclient.get("Prelude").equals(Appoint_Prelude.C_V_ftp_file) && formclient.get("Flag").equals("over")) {
 							System.out.println("结束");
+							FTP.ftpshow.SetTex("结束\n");
 							formclient.clear();
 							break;
 						}
 						else {
 							System.out.println("验证错误");
+							FTP.ftpshow.SetTex("验证错误\n");
 							Toclient.put("Prelude", Appoint_Prelude.V_C_ftp_upload);
 							oos.writeObject(Toclient);
 						}
@@ -111,6 +115,7 @@ public class VFTPthread extends Thread {
 					Servers.close();
 					Sockets.close();
 					System.out.println("结束");
+					FTP.ftpshow.SetTex("结束\n");
 				}
 			} catch (IOException | ClassNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -149,6 +154,7 @@ public class VFTPthread extends Thread {
 					oos.writeObject(toclient);
 					fromclient = (HashMap<String, String>) ois.readObject();
 					System.out.println("首部信息：" + fromclient.get("Prelude") + "," + "文件信息：" + fromclient.get("FileName"));
+					FTP.ftpshow.SetTex("首部信息：" + fromclient.get("Prelude") + "," + "文件信息：" + fromclient.get("FileName")+"\n");
 					if(fromclient.get("Prelude").equals(Appoint_Prelude.C_V_ftp_name)) {
 						filepath = filepath + "\\" + fromclient.get("FileName");
 						System.out.println(filepath);
@@ -172,6 +178,7 @@ public class VFTPthread extends Thread {
 			                	}
 			                	else{
 			                		System.out.println("send file...");
+			                		FTP.ftpshow.SetTex("send file...\n");
 			                		Toclient.put("Prelude", Appoint_Prelude.V_C_ftp_file);
 			                		Toclient.put("Flag","continue");
 			                		oos.writeObject(Toclient);

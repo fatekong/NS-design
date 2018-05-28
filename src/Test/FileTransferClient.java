@@ -15,7 +15,7 @@ import java.net.Socket;
  */
 public class FileTransferClient extends Socket {
 
-    private static final String SERVER_IP = "127.0.0.1"; // 服务端IP
+    private static final String SERVER_IP = "192.168.0.140"; // 服务端IP
     private static final int SERVER_PORT = 8899; // 服务端端口
 
     private Socket client;
@@ -41,7 +41,7 @@ public class FileTransferClient extends Socket {
      */
     public void sendFile() throws Exception {
         try {
-            File file = new File("D:\\TestforNS-design\\4.png");
+            File file = new File("D:\\TestforNS-design\\NS.txt");
             if(file.exists()) {
                 fis = new FileInputStream(file);
                 dos = new DataOutputStream(client.getOutputStream());

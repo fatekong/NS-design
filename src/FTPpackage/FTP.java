@@ -6,6 +6,9 @@ import java.net.Socket;
 import java.util.Calendar;
 import java.util.HashMap;
 
+import TGSpackage.TGS;
+import TGSpackage.TGSshow;
+
 class FTPVThread extends Thread {
 	public static final String SERVER_IP = "127.0.0.1";
 	int portnum;
@@ -59,8 +62,9 @@ class FTPVThread extends Thread {
 		String IDca = authtc[0];
 		String ADca = authtc[1];
 		TS5 = authtc[2];
-		if (IDca.equals(IDce) && ADca.equals(ADce) && ADca.equals("china")) {
+		if (IDca.equals(IDce) && ADca.equals(ADce) && ADca.equals(ADc)) {
 			System.out.println("IDc和ADc没问题");
+			FTP.ftpshow.SetTex("IDc和ADc没问题\n");
 			IDc = IDca;
 			ADc = ADca;
 			Calendar c = Calendar.getInstance();
@@ -74,6 +78,7 @@ class FTPVThread extends Thread {
 					&& hour == Integer.parseInt(ts1[2]) && month == Integer.parseInt(ts2[0])
 					&& date == Integer.parseInt(ts2[1]) && hour == Integer.parseInt(ts2[2])) {
 				System.out.println("时间没问题");
+				FTP.ftpshow.SetTex("时间没问题\n");
 				if (minute - Integer.parseInt(ts1[3]) < 2 && minute - Integer.parseInt(ts2[3]) < 1) {
 
 					if (IDv.equals(FTP.MyID) && Integer.parseInt(LifeTime) > 1) {
@@ -103,6 +108,9 @@ class FTPVThread extends Thread {
 			while (true) {
 				ServerSocket Servers = new ServerSocket(portnum);
 				Socket Sockets = Servers.accept();
+				ADc = Sockets.getInetAddress().toString();
+				String ip[] = ADc.split("/");
+				ADc = ip[1];
 				InputStream in = Sockets.getInputStream();
 				ObjectInputStream ois = new ObjectInputStream(in);
 				OutputStream os = Sockets.getOutputStream();
@@ -110,6 +118,7 @@ class FTPVThread extends Thread {
 				HashMap<String, String> fromclient = (HashMap<String, String>) ois.readObject();
 				String prelude = fromclient.get("Prelude");
 				System.out.println("C:" + prelude);
+				FTP.ftpshow.SetTex("C:" + prelude+"\n");
 				if (prelude.equals(Appoint_Prelude.C_V)) {
 					boolean s = unpacked(fromclient);
 					System.out.println(s);
@@ -135,6 +144,8 @@ class FTPVThread extends Thread {
 						// upload.start();// C下载V的文件
 						download.start();// C向V上传文件
 						System.out.println("出来了");
+						FTP.ftpshow.SetTex("出来了\n");
+						
 					}
 				}
 				Servers.close();
@@ -150,8 +161,16 @@ public class FTP {
 	public static final String FilePath = "D:\\学术\\资料\\智能优化\\差分进化";
 	static String MyID = "FTP";
 	static String kcv[] = new String[4];
+	@SuppressWarnings("resource")
+	public static boolean sign = false;
+	public static FTPshow ftpshow ;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
+		ftpshow = new FTPshow();
+		while(sign == false) {
+			Thread.sleep(1000);
+		}
+		System.out.println("hhh");
 		FTPVThread forclient1 = new FTPVThread(10012);
 		FTPVThread forclient2 = new FTPVThread(10013);
 		FTPVThread forclient3 = new FTPVThread(10014);

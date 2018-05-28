@@ -1,8 +1,9 @@
-package FTP_revision;
+package FTPtest;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * @author generalandroid
@@ -10,6 +11,20 @@ import java.util.Arrays;
  * 根据DES算法原理实现DES加密算法，主要是为了更加深入地理解DES算法
  * **/
 public class DES {
+	public String Main_key()//鐢熸垚浜嗗瘑閽�
+    {
+    		String key="";
+    		int element = 0;
+    		Random random = new Random();
+    		for(int i = 0 ; i < 8 ; i++) {
+    			element = Math.abs(random.nextInt())%95+32;
+    			if((char)element!='-'&&(char)element!='"') 
+    				key += (char)element;
+    			else
+    				i--;
+    		}
+    		return key;
+    }
     //初始置换
     private int[] IP={58,50,42,34,26,18,10,2,
                      60,52,44,36,28,20,12,4,
@@ -161,7 +176,7 @@ public class DES {
     		return c;
     }
     
-    /*public static void main(String[] args) throws UnsupportedEncodingException{
+    public static void main(String[] args) throws UnsupportedEncodingException{
         String origin="文钱坤12345678900986432345654321";
         System.out.println("原文：\n"+origin);
         DES des=new DES();
@@ -171,7 +186,7 @@ public class DES {
         des.decode(temp, key);
 
 
-    }*/
+    }
     /***代码运行结果：
      * 
      原文：
