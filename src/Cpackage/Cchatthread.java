@@ -7,7 +7,7 @@ import java.net.*;
 
 public class Cchatthread extends Thread {
 	public static final String SERVER_IP = "127.0.0.1";
-	int my;
+	//int my;
 	String flag = "";
 	int portnum_in;
 	int portnum_out;
@@ -20,8 +20,8 @@ public class Cchatthread extends Thread {
 	private InputStream in = null;
 	private ObjectInputStream ois = null;
 	private String ip = "";
-	public Cchatthread(int port, int m, String f, String u , String IP) {
-		this.my = m;
+	public Cchatthread(int port, String f, String u , String IP) {
+		//this.my = m;
 		this.portnum = port;
 		this.portnum_in = port + 1100;
 		this.portnum_out = port + 1000;
@@ -85,7 +85,7 @@ public class Cchatthread extends Thread {
 					} else if (Prelude.equals(Appoint_Prelude.V_C_chatcut)) {
 						// Ser.close();
 						Soc.close();
-						Appoint_Client.state[my] = 0;
+						//Appoint_Client.state[my] = 0;
 						break;
 					}
 					Thread.sleep(1000);
@@ -111,10 +111,10 @@ public class Cchatthread extends Thread {
 				oos = new ObjectOutputStream(out);
 				int i = 0;
 				while (true) {
-					if (Appoint_Client.state[my] == 0) {
+					/*if (Appoint_Client.state[my] == 0) {
 						Soc.close();
 						break;
-					}
+					}*/
 					System.out.println("send。。。");
 					HashMap<String, String> toclient = new HashMap<String, String>();
 					toclient.put("Prelude", Appoint_Prelude.C_V_chat);// 断开后信息也是从此发出给服务器

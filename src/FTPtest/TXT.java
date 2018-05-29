@@ -1,4 +1,4 @@
-package Cpackage;
+package FTPtest;
 
 import java.net.*;
 import java.awt.*;

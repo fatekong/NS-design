@@ -5,15 +5,12 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.util.HashMap;
 
 
+
 public class Client {
-	//private SW sw;
-	//private TXT txt;
-	private static Select slt;
 	private int ASport = 10000;
 	private int TGSport = 10001;
 	private int chatVport = 10008;
@@ -22,6 +19,7 @@ public class Client {
 	private String TGS_IP = "192.168.0.144";
 	private String chatV_IP = "";
 	private String FTP_IP = "";
+	private String Name = "";
 	public static String V = "";
 	public static boolean signforchoose = false;
 	//public static boolean Csign = false;
@@ -29,11 +27,16 @@ public class Client {
 		if (!s.equals(""))
 			chatV_IP = s;
 	}
+	
 	public void SetFIPaddress(String s) {
 		if (!s.equals(""))
 			FTP_IP = s;
 	}
-	@SuppressWarnings("unchecked")
+	
+	public void SetName(String s) {
+		Name = s ;
+	}
+	@SuppressWarnings({ "unchecked", "resource" })
 	public void RunchatV(String V) throws InterruptedException, IOException, ClassNotFoundException {
 		Client01.sw = new SW();
 		while (Client01.sign == false) {
@@ -43,7 +46,8 @@ public class Client {
 		// String V = "FTP";
 		Client01 c1 = new Client01(V);
 		SetCIPaddress(Client01.sw.GetIPaddress());
-		c1.SetUserName(Client01.sw.GetUserName());
+		//c1.SetUserName(Client01.sw.GetUserName());
+		SetName(Client01.sw.GetUserName());
 		Cchatthread init = null;
 		Cchatthread out = null;
 		int for_thread_sign = 0;
@@ -128,9 +132,9 @@ public class Client {
 			System.out.println("s:" + s);
 			if (V_Prelude.equals(Appoint_Prelude.V_C) && s == true) {
 				Client01.sw.SetInfo("V连接成功");
-				Appoint_Client.state[c1.my] = 1;
-				init = new Cchatthread(chatVport, c1.my, "in", c1.MyName,chatV_IP);
-				out = new Cchatthread(chatVport, c1.my, "out", c1.MyName,chatV_IP);
+				//Appoint_Client.state[c1.my] = 1;
+				init = new Cchatthread(chatVport, "in", Name , chatV_IP);
+				out = new Cchatthread(chatVport, "out", Name , chatV_IP);
 				System.out.println("开启线程");
 				init.start();
 				out.start();
@@ -138,11 +142,13 @@ public class Client {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "resource" })
 	public void RunFTP(String V) throws ClassNotFoundException, InterruptedException {
 		try {
 			Client01.txt = new TXT();
 //			String V = "FTP";
+			while(true)
+			{
 			while (Client01.sign == false) {
 				Thread.sleep(1000);
 			}
@@ -191,32 +197,6 @@ public class Client {
 				socket.close();
 				//sw.SetInfo("TGS连接成功");
 				HashMap<String, String> ToV = new HashMap<String, String>();
-				if (V == "chatV") {
-					socket = new Socket(chatV_IP, chatVport);
-					os = socket.getOutputStream();
-					oos = new ObjectOutputStream(os);
-					ToV = c1.ToV();
-					oos.writeObject(ToV);
-					is = socket.getInputStream();
-					ois = new ObjectInputStream(is);
-					HashMap<String, String> FromV = (HashMap<String, String>) ois.readObject();
-					String v_Prelude = FromV.get("Prelude");
-					while (!v_Prelude.equals(Appoint_Prelude.V_C)) {
-						oos.writeObject(ToV);
-					}
-					boolean s = c1.FromV(FromV);
-					String V_Prelude = FromV.get("Prelude");
-					System.out.println("s:" + s);
-					if (V_Prelude.equals(Appoint_Prelude.V_C) && s == true) {
-						//sw.SetInfo("V连接成功");
-						Appoint_Client.state[Client01.my] = 1;
-						Cchatthread init = new Cchatthread(chatVport, Client01.my, "in", Client01.MyName , FTP_IP);
-						Cchatthread out = new Cchatthread(chatVport, Client01.my, "out", Client01.MyName , FTP_IP);
-						System.out.println("开启线程");
-						init.start();
-						out.start();
-					}
-				} else if (V == "FTP") {
 					socket = new Socket(FTP_IP, FTPport);
 					os = socket.getOutputStream();
 					oos = new ObjectOutputStream(os);
@@ -244,15 +224,15 @@ public class Client {
 							download.start();
 						}
 					}
-				}
-			//}
+				Client01.sign = false;
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public static void main(String[] args) throws InterruptedException, ClassNotFoundException, IOException {
-		slt = new Select();
+		new Select();
 		Client c = new Client();
 		while(!signforchoose) {
 			Thread.sleep(500);

@@ -341,7 +341,7 @@ public class Client01 {
 	public static TXT txt;
 
 	//private static Socket SSS;
-	@SuppressWarnings({ "unchecked", "resource" })
+	/*@SuppressWarnings({ "unchecked", "resource" })
 	public static void main(String args[]) throws ClassNotFoundException, InterruptedException {
 		try {
 			String V = "FTP";
@@ -442,8 +442,8 @@ public class Client01 {
 						if (V_Prelude.equals(Appoint_Prelude.V_C) && s == true) {
 							sw.SetInfo("V连接成功");
 							Appoint_Client.state[my] = 1;
-							init = new Cchatthread(chatVport, my, "in", MyName,chatV_IP);
-							out = new Cchatthread(chatVport, my, "out", MyName,chatV_IP);
+							//init = new Cchatthread(chatVport, my, "in", MyName,chatV_IP);
+							//out = new Cchatthread(chatVport, my, "out", MyName,chatV_IP);
 							System.out.println("开启线程");
 							init.start();
 							out.start();
@@ -544,5 +544,5 @@ public class Client01 {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 }

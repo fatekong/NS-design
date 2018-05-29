@@ -16,7 +16,6 @@ import java.net.Socket;
 import java.util.HashMap;
 
 
-
 public class VFTPthread extends Thread {
 	int portnum;
 	int portnum_in;
@@ -52,22 +51,30 @@ public class VFTPthread extends Thread {
 		cftp = cf;
 	}
 	
-	public void Break() {
-		try {
-			this.Sockets.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void Break() throws IOException {
+		this.Servers.close();
 	}
-	@SuppressWarnings({ "unchecked", "resource" })
+	
+	@SuppressWarnings({ "unchecked", "resource", "deprecation" })
 	public void run() {
 		if(model.equals("download")) {
 			try {
 				String filepath = FTP.FilePath;
-				ServerSocket Server = new ServerSocket(portnum_in);
-				Sockets = Server.accept();
-				Server.close();
+				Servers = new ServerSocket(portnum_in);
+				try {
+				Sockets = Servers.accept();
+				}catch(IOException e) {
+					System.out.println("文件下载已退出");
+					this.interrupt();
+					this.stop();
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				Servers.close();
 				is = Sockets.getInputStream();
 				ois = new ObjectInputStream(is);
 				HashMap<String,String> formclient = (HashMap<String, String>) ois.readObject();
@@ -158,9 +165,21 @@ public class VFTPthread extends Thread {
 		else if(model.equals("upload")) {
 			try {
 				String filepath = FTP.FilePath;
-				ServerSocket Server = new ServerSocket(portnum_out);
-				Sockets = Server.accept();
-				Server.close();
+				Servers = new ServerSocket(portnum_out);
+				try {
+					Sockets = Servers.accept();
+					}catch(IOException e) {
+						System.out.println("文件上传已退出");
+						this.interrupt();
+						this.stop();
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+				Servers.close();
 				is = Sockets.getInputStream();
 				ois = new ObjectInputStream(is);
 				HashMap<String,String> fromclient = (HashMap<String, String>) ois.readObject();

@@ -19,12 +19,13 @@ import java.util.HashMap;
 public class Cftpthread extends Thread {
 	int portnum;
 	int my;
+
 	//String ftp_IP = "127.0.0.1";
 	String model = "";// upload是上传，download是下载
 	int portnum_in;
 	int portnum_out;
-	String ip = "";
-	public Cftpthread(int port, String m,String IP) {
+	String IP = "";
+	public Cftpthread(int port, String m,String ip) {
 		this.portnum = port;
 		this.model = m;
 		this.portnum_in = port + 1100;
@@ -37,21 +38,21 @@ public class Cftpthread extends Thread {
 			my = 2;
 		else if(port == 10015)
 			my = 3;
-		ip = IP;
+		IP = ip;
 	}
 
 	@SuppressWarnings({ "unchecked", "resource" })
 	public void run() {
 		if (model.equals("upload")) {
 			try {
-				String filepath = "D:\\TestforNS-design\\NS.txt";
-				Socket socket = new Socket(ip, portnum_out);
+//				Client01.filepath = "D:\\TestforNS-design\\NS.txt";
+				Socket socket = new Socket(IP, portnum_out);
 				HashMap<String, String> ToFTP = new HashMap<String, String>();
 				ToFTP.put("Prelude", Appoint_Prelude.C_V_ftp_name);
 				DES des = new DES();
 				String FileName = "";
 				if(my == 0) 
-					FileName = des.encode("NS.txt", Client01.kcv);
+					FileName = des.encode(Client01.FileName, Client01.kcv);
 				/*else if(my == 1)
 					FileName = des.encode("NS.txt", Client02.kcv);
 				else if(my == 2)
@@ -69,7 +70,10 @@ public class Cftpthread extends Thread {
 				String ftp_Prelude = FromFTP.get("Prelude");
 				if(ftp_Prelude.equals(Appoint_Prelude.V_C_ftp_upload)) {
 					byte[] bytes = new byte[1024];
-	                DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(filepath)));
+					File fff = new File(Client01.filepath);
+					long lonng = fff.length();
+					
+	                DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(Client01.filepath)));
 	                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 	                ToFTP.clear();
 	                FromFTP.clear();
@@ -107,6 +111,7 @@ public class Cftpthread extends Thread {
 		                		break;
 		                	}
 		                	else{
+		                		TXT.time1 = (int) (lonng/1024+1);
 		                		System.out.println("send file...");
 		                		toFTP.put("Prelude", Appoint_Prelude.C_V_ftp_file);
 		                		toFTP.put("Flag","continue");
@@ -117,6 +122,7 @@ public class Cftpthread extends Thread {
 			                    dos.flush();
 			                    toFTP.clear();
 		                	}
+	                		
 	                	}
 	                	else{
 	                		toFTP.put("Prelude", Appoint_Prelude.V_C_error);
@@ -135,8 +141,8 @@ public class Cftpthread extends Thread {
 		}
 		else if(model.equals("download")) {
 			try {
-				String filepath = "D:\\TestforNS-design";
-				Socket Sockets = new Socket(ip, portnum_in);
+				String filepath = "D://NS-download";
+				Socket Sockets = new Socket(IP, portnum_in);
 				OutputStream os = Sockets.getOutputStream();
 				ObjectOutputStream oos = new ObjectOutputStream(os);
 				HashMap<String,String> toFTP = new HashMap<String,String>();
@@ -147,22 +153,52 @@ public class Cftpthread extends Thread {
 				HashMap<String,String> formFTP = (HashMap<String, String>) ois.readObject();
 				String Prelude = formFTP.get("Prelude");
 				String filesname = "";
+				String FilesLength = "";
+				DES des = new DES();
 				if(Prelude.equals(Appoint_Prelude.V_C_ftp_download)) {
 					filesname = formFTP.get("FilesName");
+					FilesLength = formFTP.get("FilesLength");
+					filesname = des.decode(filesname, Client01.kcv);
 					String filechoice[] = filesname.split("-");
+					String lengthchoice[] = FilesLength.split("-");
 					for(int i = 0; i<filechoice.length ; i++) {
 						System.out.println(filechoice[i]);
 					}
-					File file = new File(filepath + File.separatorChar + "NS_test.txt");
+					for(int i=0;i<filechoice.length;i++)
+					Client01.txt.ta2.addItem(filechoice[i]);
+					
+					while(Client01.kk == 0)
+					{
+						Thread.sleep(1000);
+					}
+					Client01.kk = 0;
+					String fnd = Client01.FileName_d;
+					int k=0;
+					for(k=0;k<filechoice.length;++k)
+					{
+						if(filechoice[k]==fnd)
+						{
+							break;
+						}
+					}
+					System.out.println(lengthchoice[k]);
+					fnd = des.encode(fnd, Client01.kcv);
+					File file = new File(filepath + File.separatorChar + Client01.FileName_d);
 					HashMap<String,String> toftp = new HashMap<String,String>();
 					toftp.put("Prelude", Appoint_Prelude.C_V_ftp_name);
-					toftp.put("FileName","NS_test.txt");
+					toftp.put("FileName",fnd);
 					oos.writeObject(toftp);
 					FileOutputStream fos = new FileOutputStream(file);
 					DataInputStream dis = new DataInputStream(Sockets.getInputStream());
 					int length = 0;
 					byte[] bytes = new byte[1024];
+					TXT.time2 = (int) (Long.parseLong(lengthchoice[k])/1024+1);
+					lengthchoice=null;
+					filechoice=null;
+					k=0;
+					Client01.txt.ta2.removeAllItems();
 					while(true) {
+						Thread.sleep(500);
 						formFTP = (HashMap<String, String>) ois.readObject();
 						HashMap<String, String> ToFTP = new HashMap<String, String>();
 						System.out.println("等待。。。"+formFTP.get("Prelude") + "||" + formFTP.get("Flag"));
@@ -170,6 +206,7 @@ public class Cftpthread extends Thread {
 							ToFTP.put("Prelude", Appoint_Prelude.C_V_ftp_file);
 							System.out.println("recv file...");
 							length = dis.read(bytes);
+							bytes = des.decode_b(bytes, Client01.kcv);
 							fos.write(bytes, 0, length);  
 							oos.writeObject(ToFTP);
 		                    fos.flush();
@@ -188,6 +225,9 @@ public class Cftpthread extends Thread {
 					fos.close();
 				}
 			} catch (IOException | ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
