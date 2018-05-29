@@ -1,4 +1,4 @@
-package Cpackage;
+/*package Cpackage;
 import java.net.*; 
 import java.io.IOException;  
 import java.io.InputStream;
@@ -56,3 +56,4 @@ public class Client02 {
 		}
 	}
 }
+*/

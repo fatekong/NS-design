@@ -10,6 +10,8 @@ import java.util.concurrent.Executors;
 
 
 class FTPVThread extends Thread {
+	static VFTPthread upload = null;
+	static VFTPthread download = null;
 	public static final String SERVER_IP = "127.0.0.1";
 	int portnum;
 	int client_num;
@@ -109,6 +111,23 @@ class FTPVThread extends Thread {
 
 		try {
 			while (true) {
+				while(true) {
+					if(FTP.state.get(SOCKET_IP).equals(-1))
+						break;
+					else if(FTP.state.get(SOCKET_IP).equals(0))
+						Thread.sleep(500);
+					else if(FTP.state.get(SOCKET_IP).equals(1)) {
+						upload.Break();
+						System.out.println("upload关闭");
+						break;
+					}
+					else if(FTP.state.get(SOCKET_IP).equals(2)) {
+						download.Break();
+						System.out.println("download关闭");
+						break;
+					}
+						
+				}
 				//ServerSocket Servers = new ServerSocket(portnum);
 				//Socket Sockets = Servers.accept();
 				ADc = Sockets.getInetAddress().toString();
@@ -143,10 +162,13 @@ class FTPVThread extends Thread {
 						HashMap<String, String> toclient = new HashMap<String, String>();
 						toclient = packet();
 						oos.writeObject(toclient);
-						VFTPthread upload = new VFTPthread(portnum, SOCKET_IP, "upload");// C下载V的文件
-						VFTPthread download = new VFTPthread(portnum, SOCKET_IP, "download");// C向V上传文件
+						upload = new VFTPthread(portnum, SOCKET_IP, "upload");// C下载V的文件
+						download = new VFTPthread(portnum, SOCKET_IP, "download");// C向V上传文件
+						//upload.SetVFTP(download);
+						//download.SetVFTP(upload);
 						upload.start();// C下载V的文件
 						download.start();// C向V上传文件
+						FTP.state.put(SOCKET_IP, 0);
 						//System.out.println("出来了");
 					}
 				}
@@ -155,11 +177,15 @@ class FTPVThread extends Thread {
 			}
 		} catch (IOException | ClassNotFoundException e) {
 			System.out.println("socket错误");
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }
 
 public class FTP {
+	public static HashMap<String,Integer> state = new HashMap<String,Integer>();
 	public static final String FilePath = "D:\\学术\\资料\\智能优化\\差分进化";
 	static String MyID = "FTP";
 	static int port = 10012;
@@ -189,6 +215,8 @@ public class FTP {
 				ip = ipp[1];
 			//ASThread forclient1 = new ASThread(10000);
 			//forclient1.start();
+				/////////////////////////////////////////////////////////////////
+			state.put(ip, -1);
 			executor.execute(new FTPVThread(port,ip,Socket));
 			
 		}

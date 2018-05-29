@@ -246,6 +246,7 @@ public class Client01 {
 			try {
 				sw = new SW();
 				//String V = "chatV";
+				while (true) {
 				while (sign == false) {
 					Thread.sleep(1000);
 				}
@@ -257,7 +258,7 @@ public class Client01 {
 				
 	
 				
-				while (true) {
+				
 					while (!break_internet) {
 						Thread.sleep(1000);
 					}
@@ -323,7 +324,7 @@ public class Client01 {
 						System.out.println("s:" + s);
 						if (V_Prelude.equals(Appoint_Prelude.V_C) && s == true) {
 							sw.SetInfo("V连接成功");
-							//Appoint_Client.state[my] = 1;
+							Appoint_Client.state[my] = 1;
 							Cchatthread init = new Cchatthread(chatVport, my, "in", MyName);
 							Cchatthread out = new Cchatthread(chatVport, my, "out", MyName);
 							System.out.println("开启线程");
@@ -353,6 +354,7 @@ public class Client01 {
 							// download.start();
 						}
 					}
+					sign=false;
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -363,6 +365,8 @@ public class Client01 {
 			try {
 				txt = new TXT();
 //				String V = "FTP";
+				while(true)
+				{
 				while (sign == false) {
 					Thread.sleep(1000);
 				}
@@ -465,11 +469,14 @@ public class Client01 {
 							}
 						}
 					}
-				//}
+					sign=false;
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+		
 	}
+	
 		
 }

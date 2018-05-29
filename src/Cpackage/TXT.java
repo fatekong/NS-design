@@ -1,4 +1,4 @@
-package Swing;
+package Cpackage;
 
 import java.net.*;
 import java.awt.*;
@@ -7,7 +7,10 @@ import java.awt.event.*;
 import java.io.*;
 
 public class TXT {
-	String[] ip = {"192.168.111","192.168.111","192.168.111","192.168.111","192.168.111"};
+	String[] na = {"192.168.0.144","192.168.111","192.168.111","192.168.111","192.168.111"};
+	String[] nb = {};
+	String IP = "";
+	String filepath;
 	JFrame f = new JFrame("文件传输");
 	JButton button1 = new JButton("选择文件");
 	JButton button2 = new JButton("上传");
@@ -17,7 +20,7 @@ public class TXT {
 	JButton button6 = new JButton("IP：");
 	final JTextArea ta1 = new JTextArea();
 	final JComboBox ta2 = new JComboBox();
-	final JComboBox ta3 = new JComboBox(ip);
+	final JComboBox ta3 = new JComboBox(na);
 	final JTextArea ta4 = new JTextArea();
 	final JTextArea ta5 = new JTextArea();
 	final JLabel label1 = new JLabel("*******************************文件上传**********************************");
@@ -65,24 +68,41 @@ public class TXT {
 				chooser.setMultiSelectionEnabled(true); // 设为多选
 				int returnVal = chooser.showOpenDialog(button1); // 是否打开文件选择框
 				if (returnVal == JFileChooser.APPROVE_OPTION) { // 如果符合文件类型
-					String filepath = chooser.getSelectedFile().getAbsolutePath(); // 获取绝对路径
+					filepath = chooser.getSelectedFile().getAbsolutePath(); // 获取绝对路径
 					ta1.setText(filepath);
+					if(filepath == null)
+					{
+						filepath = " ";
+					}
 				}
 			}
 		});
+		//IP=(String)comboBox2.getSelectedItem();//获取IP地址
+		button2.addActionListener(new ActionListener() {//上传
+			public void actionPerformed(ActionEvent e) {
+				Client01.ff = 0;
+				//IP=(String)ta3.getSelectedItem();//获取IP地址
+				//System.out.println("IP:"+IP);
+				System.out.println(filepath);
+				Client01.filepath = filepath;
+				String[] sr=filepath.split("/");
+				Client01.FileName = sr[sr.length-1];
+				System.out.println(Client01.FileName);
+				Client01.sign = true;
+			}
+		});
+		
 		button3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String[] na = {"1.txt","2.txt","3.txt","4.txt","5.txt"};
-				for(int i=0;i<na.length;i++) {
-					ta2.addItem(na[i]);
-				}
+				Client01.ff = 1;
+				Client01.sign = true;
 			}
 			}
 		);
 		button4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String s=(String)ta2.getSelectedItem();
-				System.out.println(s);
+				Client01.FileName_d=(String)ta2.getSelectedItem();
+				Client01.kk = 1;
 			}
 			}
 		);
@@ -90,10 +110,15 @@ public class TXT {
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(null, "程序退出...");
 				System.exit(0);
-				
-				//ta2.removeAllItems();
 			}
 		});
+	}
+	
+	public String GetIPaddress() {
+		IP=(String)ta3.getSelectedItem();//获取IP地址
+		System.out.println("IP:"+IP);
+		//IP="192.168.0.144";
+		return IP;
 	}
 	
 	public static void main(String args[]) throws IOException {

@@ -4,13 +4,14 @@ import java.net.*;
 import java.awt.*;
 import javax.swing.*;
 
+import Cpackage.Client;
 import Cpackage.SW;
 
 import java.awt.event.*;
 import java.io.*;
 
 public class Select{
-	static int a=0;
+	//static int a=0;
 	public static void main(String args[]) throws IOException {
 		JFrame f=new JFrame("客户机选择");
 		JButton button1=new JButton("聊天室");
@@ -36,16 +37,19 @@ public class Select{
 		f.setVisible(true);
 		button1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				a=1;
-				System.out.println(a);
-				new SW();
+			//	a=1;
+			//	System.out.println(a);
+				Client.signforchoose = true;
+				Client.V = "chatV";
 			}
 			});
 		button2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				a=2;
-				System.out.println(a);
-				new TXT();
+			//	a=2;
+			//	System.out.println(a);
+			//	new TXT();
+				Client.signforchoose = true;
+				Client.V = "FTP";
 			}
 			});
 	}

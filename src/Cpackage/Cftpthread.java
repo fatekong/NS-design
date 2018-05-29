@@ -23,8 +23,8 @@ public class Cftpthread extends Thread {
 	String model = "";// upload是上传，download是下载
 	int portnum_in;
 	int portnum_out;
-
-	public Cftpthread(int port, String m) {
+	String ip = "";
+	public Cftpthread(int port, String m,String IP) {
 		this.portnum = port;
 		this.model = m;
 		this.portnum_in = port + 1100;
@@ -37,6 +37,7 @@ public class Cftpthread extends Thread {
 			my = 2;
 		else if(port == 10015)
 			my = 3;
+		ip = IP;
 	}
 
 	@SuppressWarnings({ "unchecked", "resource" })
@@ -44,7 +45,7 @@ public class Cftpthread extends Thread {
 		if (model.equals("upload")) {
 			try {
 				String filepath = "D:\\TestforNS-design\\NS.txt";
-				Socket socket = new Socket(Client01.FTP_IP, portnum_out);
+				Socket socket = new Socket(ip, portnum_out);
 				HashMap<String, String> ToFTP = new HashMap<String, String>();
 				ToFTP.put("Prelude", Appoint_Prelude.C_V_ftp_name);
 				DES des = new DES();
@@ -135,7 +136,7 @@ public class Cftpthread extends Thread {
 		else if(model.equals("download")) {
 			try {
 				String filepath = "D:\\TestforNS-design";
-				Socket Sockets = new Socket(Client01.FTP_IP, portnum_in);
+				Socket Sockets = new Socket(ip, portnum_in);
 				OutputStream os = Sockets.getOutputStream();
 				ObjectOutputStream oos = new ObjectOutputStream(os);
 				HashMap<String,String> toFTP = new HashMap<String,String>();

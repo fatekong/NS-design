@@ -20,12 +20,17 @@ public class Client01 {
 	static final int FTPport = 10012;
 	static final int my = 0;
 	static String MyName = "曌";
-	public static final String AS_IP = "192.168.0.144";
-	public static final String TGS_IP = "192.168.0.144";
-	public static String chatV_IP = "192.168.0.144";
-	public static final String FTP_IP = "192.168.0.144";
-	public static final String My_IP = "192.168.0.144";
+	private static String AS_IP = "192.168.0.144";
+	private static String TGS_IP = "192.168.0.144";
+	private static String chatV_IP = "192.168.0.144";
+	private static String FTP_IP = "192.168.0.144";
+	//public static final String My_IP = "192.168.0.144";
 	// private String IDv = "chatV";//FTP or chatV
+	public static String filepath;
+	public static String FileName;
+	public static String FileName_d;
+	public static int ff = 0 ;
+	public static int kk = 0 ;
 	private String IDv = "FTP";
 	private String IDtgs = "TGS";
 	private static String ADc = "";
@@ -221,13 +226,122 @@ public class Client01 {
 		String ip[] = s.split("/");
 		ADc = ip[1];
 	}
+	
+	/*public void RunchatV(Client01 c1) {
+		sw = new SW();
+		while (sign == false) {
+			Thread.sleep(1000);
+		}
+		System.out.println("连接按钮");
+		// String V = "FTP";
+		//Client01 c1 = new Client01(V);
+		c1.SetIPaddress(sw.GetIPaddress());
+		c1.SetUserName(sw.GetUserName());
+		Cchatthread init = null ; 
+		Cchatthread out = null;
+		int for_thread_sign = 0;
+		while (true) {
+			while (!break_internet) {
+				Thread.sleep(500);
+				if(thread_sign == false && for_thread_sign == 0) {
+					init.breaksoc();
+					out.breaksoc();
+					for_thread_sign = 1;
+					System.out.println("断开连接");
+				}
+			}
+			break_internet = false;
+			Socket socket = new Socket(AS_IP, ASport);
+			c1.SetADc(socket.getLocalAddress().toString());
+			OutputStream os = socket.getOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(os);
+			InputStream is = socket.getInputStream();
+			ObjectInputStream ois = new ObjectInputStream(is);
+
+			HashMap<String, String> ToAS = new HashMap<String, String>();
+			ToAS = c1.ToAS();
+			oos.writeObject(ToAS);
+
+			HashMap<String, String> FromAS = (HashMap<String, String>) ois.readObject();
+			// System.out.println("asassdadsadadadasdadadsafafafad");
+			// DataInputStream in = new DataInputStream(socket.getInputStream());
+			// byte[] fortgs = new byte[40];
+			// int i = in.read(fortgs);
+			// System.out.println(i);
+			// System.out.println();
+			String as_Prelude = FromAS.get("Prelude");
+			sw.SetInfo("AS连接成功");
+			while (!as_Prelude.equals(Appoint_Prelude.AS_C)) {
+				sw.SetInfo(FromAS.get("error"));
+				ToAS = c1.ToAS();
+				oos.writeObject(ToAS);
+				FromAS = (HashMap<String, String>) ois.readObject();
+				as_Prelude = FromAS.get("Prelude");
+			}
+			c1.FormAS(FromAS);
+			socket.close();
+
+			socket = new Socket(TGS_IP, TGSport);
+			HashMap<String, String> ToTGS = new HashMap<String, String>();
+			os = socket.getOutputStream();
+			oos = new ObjectOutputStream(os);
+			is = socket.getInputStream();
+			ois = new ObjectInputStream(is);
+			ToTGS = c1.ToTGS();
+			oos.writeObject(ToTGS);
+			HashMap<String, String> FromTGS = (HashMap<String, String>) ois.readObject();
+			String tgs_Prelude = FromTGS.get("Prelude");
+			System.out.println(tgs_Prelude);
+			while (!tgs_Prelude.equals(Appoint_Prelude.TGS_C)) {
+				sw.SetInfo(FromTGS.get("error"));
+				ToAS = c1.ToTGS();
+				oos.writeObject(ToTGS);
+				FromTGS = (HashMap<String, String>) ois.readObject();
+				tgs_Prelude = FromTGS.get("Prelude");
+			}
+			c1.FormTGS(FromTGS);
+			// System.out.println("over");
+			socket.close();
+			sw.SetInfo("TGS连接成功");
+			HashMap<String, String> ToV = new HashMap<String, String>();
+			//if (V == "chatV") {
+				socket = new Socket(chatV_IP, chatVport);
+				os = socket.getOutputStream();
+				oos = new ObjectOutputStream(os);
+				ToV = c1.ToV();
+				oos.writeObject(ToV);
+				is = socket.getInputStream();
+				ois = new ObjectInputStream(is);
+				HashMap<String, String> FromV = (HashMap<String, String>) ois.readObject();
+				String v_Prelude = FromV.get("Prelude");
+				while (!v_Prelude.equals(Appoint_Prelude.V_C)) {
+					oos.writeObject(ToV);
+				}
+				boolean s = c1.FromV(FromV);
+				String V_Prelude = FromV.get("Prelude");
+				System.out.println("s:" + s);
+				if (V_Prelude.equals(Appoint_Prelude.V_C) && s == true) {
+					sw.SetInfo("V连接成功");
+					Appoint_Client.state[my] = 1;
+					init = new Cchatthread(chatVport, my, "in", MyName);
+					out = new Cchatthread(chatVport, my, "out", MyName);
+					System.out.println("开启线程");
+					init.start();
+					out.start();
+				}
+			
+		}
+	}*/
+	
+	
 	public static boolean sign = false;
 	public static boolean infor = false;
 	public static boolean thread_sign = true;
 	public static SW sw;
+	public static TXT txt;
 
 	//private static Socket SSS;
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "resource" })
 	public static void main(String args[]) throws ClassNotFoundException, InterruptedException {
 		try {
 			String V = "FTP";
@@ -328,8 +442,8 @@ public class Client01 {
 						if (V_Prelude.equals(Appoint_Prelude.V_C) && s == true) {
 							sw.SetInfo("V连接成功");
 							Appoint_Client.state[my] = 1;
-							init = new Cchatthread(chatVport, my, "in", MyName);
-							out = new Cchatthread(chatVport, my, "out", MyName);
+							init = new Cchatthread(chatVport, my, "in", MyName,chatV_IP);
+							out = new Cchatthread(chatVport, my, "out", MyName,chatV_IP);
 							System.out.println("开启线程");
 							init.start();
 							out.start();
@@ -351,7 +465,7 @@ public class Client01 {
 						String V_Prelude = FromV.get("Prelude");
 						if (V_Prelude.equals(Appoint_Prelude.V_C) && s == true) {
 							System.out.println("收到V-》C");
-							Cftpthread upload = new Cftpthread(FTPport, "upload");// 上传
+							Cftpthread upload = new Cftpthread(FTPport, "upload",FTP_IP);// 上传
 							// Cftpthread download = new Cftpthread(FTPport,"download");//下载
 							upload.start();
 							// download.start();
@@ -422,7 +536,7 @@ public class Client01 {
 				if (V_Prelude.equals(Appoint_Prelude.V_C) && s == true) {
 					System.out.println("收到V-》C");
 					//Cftpthread upload = new Cftpthread(FTPport, "upload");// 上传
-					Cftpthread download = new Cftpthread(FTPport,"download");//下载
+					Cftpthread download = new Cftpthread(FTPport,"download",FTP_IP);//下载
 					//upload.start();
 					download.start();
 				}

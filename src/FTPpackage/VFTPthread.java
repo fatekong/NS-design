@@ -145,10 +145,13 @@ public class VFTPthread extends Thread {
 					toclient.put("Prelude", Appoint_Prelude.V_C_ftp_download);
 					File dir = new File(filepath);
 					String[] fileNames=dir.list();
+
 					for(int i = 0 ; i < fileNames.length ; i++) {
 						FilesName += fileNames[i] + "-";
+
 					}
 					toclient.put("FilesName", FilesName);
+
 					OutputStream os = Sockets.getOutputStream();
 					ObjectOutputStream oos = new ObjectOutputStream(os);
 					oos.writeObject(toclient);

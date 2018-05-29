@@ -1,4 +1,4 @@
-package Cpackage;
+/*package Cpackage;
 
 import java.net.*;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
-
+s
 public class Client04 {
 	static final int myport = 10011;
 	static final String chatV_IP = "127.0.0.1";
@@ -44,3 +44,4 @@ public class Client04 {
 		}
 	}
 }
+*/

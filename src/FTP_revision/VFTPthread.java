@@ -29,6 +29,7 @@ public class VFTPthread extends Thread {
 	private static ObjectOutputStream oos = null;
 	private static InputStream is = null;
 	private static ObjectInputStream ois = null;
+	private VFTPthread cftp = null;
 	
 	//int my ;
 	public VFTPthread(int port ,String IP, String m) {
@@ -47,9 +48,13 @@ public class VFTPthread extends Thread {
 			my = 3;*/
 	}
 
+	public void SetVFTP(VFTPthread cf) {
+		cftp = cf;
+	}
+	
 	public void Break() {
 		try {
-			Sockets.close();
+			this.Sockets.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -133,19 +138,20 @@ public class VFTPthread extends Thread {
 					//Servers.close();
 					Sockets.close();
 					System.out.println("½áÊø");
+					FTP.state.put(MY_IP, 1);
 					//FTP.thread_break = false;
 					FTP.ftpshow.SetTex("½áÊø\n");
 				}
 			} catch (IOException | ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				try {
+				/*try {
 					//Servers.close();
-					Sockets.close();
+					//Sockets.close();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}
+				}*/
 				
 			}
 		}
@@ -165,14 +171,22 @@ public class VFTPthread extends Thread {
 					toclient.put("Prelude", Appoint_Prelude.V_C_ftp_download);
 					File dir = new File(filepath);
 					String[] fileNames=dir.list();
+					long filelength = 0;
+					String FilesLength = "";
 					for(int i = 0 ; i < fileNames.length ; i++) {
+						String fp = filepath + File.separatorChar + fileNames[i];
 						FilesName += fileNames[i] + "-";
+						File file = new File(fp);
+						filelength = file.length();
+						FilesLength += String.valueOf(filelength) + "-";
+						//file.delete();
 					}
 					DES des = new DES();
 					System.out.println(FilesName);
 					FilesName = des.encode(FilesName, FTP.kcv.get(MY_IP));
 					System.out.println(FilesName);
 					toclient.put("FilesName", FilesName);
+					toclient.put("FilesLength", FilesLength);
 					os = Sockets.getOutputStream();
 					oos = new ObjectOutputStream(os);
 					oos.writeObject(toclient);
@@ -230,17 +244,19 @@ public class VFTPthread extends Thread {
 		                }
 					}
 					//FTP.thread_break = false;
+					FTP.state.put(MY_IP, 2);//¹Ø±Õdownload
 				}
 			} catch (IOException | ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				try {
-					Servers.close();
+				/*try {
+					//Servers.close();
 					Sockets.close();
+					System.out.println("ssss");
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}
+				}*/
 			}
 		}
 }}

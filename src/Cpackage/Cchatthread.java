@@ -19,14 +19,15 @@ public class Cchatthread extends Thread {
 	private OutputStream out = null;
 	private InputStream in = null;
 	private ObjectInputStream ois = null;
-
-	public Cchatthread(int port, int m, String f, String u) {
+	private String ip = "";
+	public Cchatthread(int port, int m, String f, String u , String IP) {
 		this.my = m;
 		this.portnum = port;
 		this.portnum_in = port + 1100;
 		this.portnum_out = port + 1000;
 		this.flag = f;
 		this.USER = u;
+		ip = IP;
 	}
 
 	public void breaksoc() throws IOException {
@@ -104,7 +105,7 @@ public class Cchatthread extends Thread {
 			}
 		} else if (flag.equals("out")) {
 			try {
-				Soc = new Socket(Client01.chatV_IP, portnum_out);
+				Soc = new Socket(ip, portnum_out);
 				System.out.println("out连接成功！");
 				out = Soc.getOutputStream();
 				oos = new ObjectOutputStream(out);
