@@ -22,6 +22,7 @@ public class Client {
 	private String Name = "";
 	public static String V = "";
 	public static boolean signforchoose = false;
+	public static boolean signforsend = true;//断线时不能发送
 	//public static boolean Csign = false;
 	public void SetCIPaddress(String s) {
 		if (!s.equals(""))
@@ -50,17 +51,22 @@ public class Client {
 		SetName(Client01.sw.GetUserName());
 		Cchatthread init = null;
 		Cchatthread out = null;
-		int for_thread_sign = 0;
+		int for_thread_sign;
 		while (true) {
+			for_thread_sign = 0;
 			while (!Client01.break_internet) {
 				Thread.sleep(500);
 				if (Client01.thread_sign == false && for_thread_sign == 0) {
 					init.breaksoc();
 					out.breaksoc();
 					for_thread_sign = 1;
+					signforsend = false;
+					Client01.sw.SetInfo("已断开连接！");
+					Client01.sw.ClearUser();
 					System.out.println("断开连接");
 				}
 			}
+			signforsend = true;
 			Client01.break_internet = false;
 			Socket socket = new Socket(AS_IP, ASport);
 			c1.SetADc(socket.getLocalAddress().toString());
@@ -213,7 +219,7 @@ public class Client {
 					String V_Prelude = FromV.get("Prelude");
 					if (V_Prelude.equals(Appoint_Prelude.V_C) && s == true) {
 						System.out.println("收到V-》C");
-						if(Client01.ff == 0)
+						if(Client01.ff == 0 )
 						{
 							Cftpthread upload = new Cftpthread(FTPport, "upload",FTP_IP);// 上传
 							upload.start();
@@ -223,6 +229,13 @@ public class Client {
 							Cftpthread download = new Cftpthread(FTPport,"download",FTP_IP);//下载
 							download.start();
 						}
+						/*else
+						{
+							Cftpthread upload = new Cftpthread(FTPport, "upload",FTP_IP);// 上传
+							Cftpthread download = new Cftpthread(FTPport,"download",FTP_IP);//下载
+							download.start();
+							upload.start();
+						}*/
 					}
 				Client01.sign = false;
 			}

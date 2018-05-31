@@ -3,6 +3,7 @@ import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * @author generalandroid
@@ -10,6 +11,20 @@ import java.util.Arrays;
  * 根据DES算法原理实现DES加密算法，主要是为了更加深入地理解DES算法
  * **/
 public class DES {
+	public String Main_key()//鐢熸垚浜嗗瘑閽�
+    {
+    		String key="";
+    		int element = 0;
+    		Random random = new Random();
+    		for(int i = 0 ; i < 8 ; i++) {
+    			element = Math.abs(random.nextInt())%95+32;
+    			if((char)element!='-'&&(char)element!='"') 
+    				key += (char)element;
+    			else
+    				i--;
+    		}
+    		return key;
+    }
     //初始置换
     private int[] IP={58,50,42,34,26,18,10,2,
                      60,52,44,36,28,20,12,4,
@@ -139,6 +154,15 @@ public class DES {
     		return c;
     }
     
+    public byte[] encode_f(byte[] plaintext_b,String key) throws UnsupportedEncodingException
+    {
+    		DES customDES=new DES();
+    		customDES.generateKeys(key);
+    		byte[] c=customDES.deaf(plaintext_b,1);
+//    		ans = ans.trim();
+    		return c;
+    }
+    
     public String decode(String plaintext,String key) throws UnsupportedEncodingException
     {
     		
@@ -161,15 +185,41 @@ public class DES {
     		return c;
     }
     
+    public byte[] decode_f(byte[] plaintext_b,String key) throws UnsupportedEncodingException
+    {
+    		DES customDES=new DES();
+    		customDES.generateKeys(key);
+    		byte[] c=customDES.deaf(plaintext_b,0);
+//    		ans = ans.trim();
+    		return c;
+    }
+    
     /*public static void main(String[] args) throws UnsupportedEncodingException{
-        String origin="文钱坤12345678900986432345654321";
-        System.out.println("原文：\n"+origin);
+        String origin="文钱坤";
+        String xx = "123";
+        byte[] nexx = xx.getBytes();
+        for(int i=0 ; i < nexx.length ; i++) {
+        	System.out.println(nexx[i]);
+        }
+        System.out.println("--------------------------------");
+        //System.out.println("原文：\n"+origin);
         DES des=new DES();
         String key = "zzzzzzzz";
-        String temp = des.encode(origin, key);
-        System.out.println("temp:"+temp);
-        des.decode(temp, key);
-
+        //String temp = des.encode(origin, key);
+        byte[] neyy = des.encode_b(nexx, key);
+        for(int i=0 ; i < neyy.length ; i++) {
+        	System.out.println(neyy[i]);
+        }
+        nexx = des.decode_b(neyy, key);
+        System.out.println("--------------------------------");
+        for(int i=0 ; i < nexx.length ; i++) {
+        	System.out.println(nexx[i]);
+        }
+        
+        System.out.println(new String(nexx));
+       // System.out.println("temp:"+temp);
+       // temp = des.decode(temp, key);
+      //  System.out.println(temp);
 
     }*/
     /***代码运行结果：
@@ -184,6 +234,56 @@ public class DES {
      * **/
 
 
+    /****拆分分组****/
+    public byte[] deaf(byte[] p ,int flag){
+        origin_length=p.length;
+        int g_num;
+        int r_num;
+        g_num=origin_length/8;
+        r_num=8-(origin_length-g_num*8);//8不填充
+        byte[] p_padding;
+        char str = ' ';
+        /****填充********/
+        if (r_num<8){
+            p_padding=new byte[origin_length+r_num];
+            System.arraycopy(p,0,p_padding,0,origin_length);
+            for(int i=0;i<r_num;i++){
+                p_padding[origin_length+i]=(byte)str;
+            }
+
+        }else{
+            p_padding=p;
+        }
+        g_num=p_padding.length/8;
+        byte[] f_p=new byte[8];
+        byte[] result_data=new byte[p_padding.length];
+        for(int i=0;i<g_num;i++){
+            System.arraycopy(p_padding,i*8,f_p,0,8);
+            if(i <g_num-1)
+            	System.arraycopy(descryUnit(f_p,sub_key,flag),0,result_data,i*8,8);
+            else
+            	System.arraycopy(descryUnit(f_p,sub_key,flag),0,result_data,i*8,8);
+        }
+        if (flag==0){//解密
+            byte[] p_result_data=new byte[p.length];
+            System.arraycopy(result_data,0,p_result_data,0,p.length);
+            for(int i = 7 ; i > 0 ; i--) {
+            	if(result_data[(g_num-1)*8 + i] == (byte)str) {
+            		
+            	}
+            	else {
+            		for(int j = 0 ; j <= i ; j++) {
+            			p_result_data[(g_num-1)*8 + j] = result_data[(g_num-1)*8 + j];
+            		}
+            	}
+            		
+            }
+            return  p_result_data;
+        }
+        return result_data;
+
+    }
+    
     /****拆分分组****/
     public byte[] deal(byte[] p ,int flag){
         origin_length=p.length;
@@ -218,6 +318,7 @@ public class DES {
         return result_data;
 
     }
+    
     /**加密**/
     public byte[] descryUnit(byte[] p,int k[][],int flag){
         int[] p_bit=new int[64];

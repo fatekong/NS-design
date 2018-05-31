@@ -123,7 +123,7 @@ class TGSThread extends Thread {
 		String idv_afterDES = des.encode(IDv, kctgs);
 		TGS.tgshow.SetTex("IDv：" + IDv + "\n");
 		String TS4_afterDES = des.encode(TS4, kctgs);
-		TGS.tgshow.SetTex("加密后TS4：" + TS4 + "\n");
+		TGS.tgshow.SetTex("加密后TS4：" + TS4_afterDES + "\n");
 		//String Tct_afterDES = des.encode(Ticket_beforeDES, kctgs);
 		toclient.put("Prelude", Appoint_Prelude.TGS_C);
 		toclient.put("K(c,v)", kcv_afterDES);

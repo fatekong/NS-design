@@ -51,8 +51,10 @@ public class VFTPthread extends Thread {
 		cftp = cf;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void Break() throws IOException {
 		this.Servers.close();
+		this.stop();
 	}
 	
 	@SuppressWarnings({ "unchecked", "resource", "deprecation" })
@@ -62,6 +64,7 @@ public class VFTPthread extends Thread {
 				String filepath = FTP.FilePath;
 				Servers = new ServerSocket(portnum_in);
 				try {
+					
 				Sockets = Servers.accept();
 				}catch(IOException e) {
 					System.out.println("文件下载已退出");
@@ -75,6 +78,8 @@ public class VFTPthread extends Thread {
 					}
 				}
 				Servers.close();
+				FTP.state.put(MY_IP, 1);
+				//FTP.signfordown.equals("true");
 				is = Sockets.getInputStream();
 				ois = new ObjectInputStream(is);
 				HashMap<String,String> formclient = (HashMap<String, String>) ois.readObject();
@@ -111,8 +116,9 @@ public class VFTPthread extends Thread {
 							Toclient.put("Prelude", Appoint_Prelude.V_C_ftp_file);
 							System.out.println("recv file...");
 							FTP.ftpshow.SetTex("recv file...\n");
+							//length = Integer.valueOf(formclient.get("Length"));
 							length = dis.read(bytes);
-							bytes = des.decode_b(bytes, FTP.kcv.get(MY_IP));
+							bytes = des.decode_f(bytes, FTP.kcv.get(MY_IP));
 							//String s = formclient.get("s");
 							/*String frombytes = new String(bytes);
 							frombytes = des.decode(frombytes, FTP.kcv[my]);
@@ -145,7 +151,11 @@ public class VFTPthread extends Thread {
 					//Servers.close();
 					Sockets.close();
 					System.out.println("结束");
-					FTP.state.put(MY_IP, 1);
+					FTP.signforbreak.put(MY_IP, "false");
+					/*if(FTP.state.get(MY_IP).equals(0) || FTP.state.get(MY_IP).equals(-1))
+						FTP.state.put(MY_IP, 1);
+					else
+						FTP.state.put(MY_IP, -1);*/
 					//FTP.thread_break = false;
 					FTP.ftpshow.SetTex("结束\n");
 				}
@@ -165,21 +175,19 @@ public class VFTPthread extends Thread {
 		else if(model.equals("upload")) {
 			try {
 				String filepath = FTP.FilePath;
-				Servers = new ServerSocket(portnum_out);
 				try {
+					Servers = new ServerSocket(portnum_out);
 					Sockets = Servers.accept();
 					}catch(IOException e) {
 						System.out.println("文件上传已退出");
 						this.interrupt();
 						this.stop();
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
+						//Thread.sleep(1000);
+						Servers.close();
 					}
 				Servers.close();
+				FTP.state.put(MY_IP, 2);//关闭download
+				//FTP.signforup.equals("true");
 				is = Sockets.getInputStream();
 				ois = new ObjectInputStream(is);
 				HashMap<String,String> fromclient = (HashMap<String, String>) ois.readObject();
@@ -239,7 +247,13 @@ public class VFTPthread extends Thread {
 			                		break;
 			                	}
 			                	else{
-			                		bytes = des.encode_b(bytes, FTP.kcv.get(MY_IP));
+			                		while(true){
+			                			if( read%8 == 0)
+			                				break;
+			                			else
+			                				read ++ ;
+			                		}
+			                		bytes = des.encode_f(bytes, FTP.kcv.get(MY_IP));
 			                		System.out.println("send file...");
 			                		FTP.ftpshow.SetTex("send file...\n");
 			                		Toclient.put("Prelude", Appoint_Prelude.V_C_ftp_file);
@@ -263,7 +277,12 @@ public class VFTPthread extends Thread {
 		                }
 					}
 					//FTP.thread_break = false;
-					FTP.state.put(MY_IP, 2);//关闭download
+					
+					/*if(FTP.state.get(MY_IP).equals(0) || FTP.state.get(MY_IP).equals(-1))
+						FTP.state.put(MY_IP, 2);//关闭download
+					else
+						FTP.state.put(MY_IP, -1);*/
+					FTP.signforbreak.put(MY_IP, "false");
 				}
 			} catch (IOException | ClassNotFoundException e) {
 				// TODO Auto-generated catch block

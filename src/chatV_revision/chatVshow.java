@@ -19,24 +19,22 @@ public class chatVshow {
 	chatVshow() {
 		
 		contentPane.setLayout(null);
-		button.setBounds(180, 300, 100, 40);
-		button1.setBounds(50, 300, 100, 40);
-		button2.setBounds(310, 300, 100, 40);
-		label.setBounds(160, 15, 150, 50);
+		button.setBounds(500, 500, 100, 40);
+		button1.setBounds(100, 500, 100, 40);
+		button2.setBounds(310, 500, 100, 40);
+		label.setBounds(280, 20, 150, 50);
 		label.setFont(new Font("", Font.BOLD, 22));
 		contentPane.add(label);
 		contentPane.add(button);
 		contentPane.add(button1);
 		contentPane.add(button2);
-		ta.setLineWrap(true);
-		//ta.setText("aafafaf");
-		ta.setWrapStyleWord(true);
-		jsp.setBounds(20, 60, 420, 200);
+		//ta.setCaretPosition(ta.getDocument().getLength());
+		jsp.setBounds(80, 80, 550, 400);
 		// 默认的设置是超过文本框才会显示滚动条，以下设置让滚动条一直显示
 		jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		// 把滚动条添加到容器里面
 		f.add(jsp);
-		f.setSize(500, 400);
+		f.setSize(700, 600);
 		f.setVisible(true);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		button.addActionListener(new ActionListener() {
@@ -68,6 +66,7 @@ public class chatVshow {
 
 	public void SetTex(String txt) {
 		ta.append(txt+"\n");
+		ta.setCaretPosition(ta.getDocument().getLength());
 	}
 	
 	/*public static void main(String args[]) throws IOException {

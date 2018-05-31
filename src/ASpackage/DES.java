@@ -17,13 +17,11 @@ public class DES {
     		int element = 0;
     		Random random = new Random();
     		for(int i = 0 ; i < 8 ; i++) {
-    			element = Math.abs(random.nextInt())%79+48;
-//    			System.out.println(element +"," +(char)element);
-    			if(element<58 || (element > 40 && element < 91) || (element > 96 && element < 123)) 
+    			element = Math.abs(random.nextInt())%95+32;
+    			if((char)element!='-'&&(char)element!='"') 
     				key += (char)element;
     			else
     				i--;
-    			//key += (char)element;
     		}
     		return key;
     }
@@ -135,7 +133,6 @@ public class DES {
 //
 //    }
     
-    
     public String encode(String plaintext,String key) throws UnsupportedEncodingException
     {
     		String ans="";
@@ -143,7 +140,7 @@ public class DES {
     		customDES.generateKeys(key);
     		byte[] c=customDES.deal(plaintext.getBytes("UTF8"),1);
     		ans = new String(c,"ISO_8859_1");
-    //		System.out.println("密文：\n"+ans);
+    		//System.out.println("密文：\n"+ans);
 //    		ans = ans.trim();
     		return ans;
     }

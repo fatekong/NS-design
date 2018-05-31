@@ -1,5 +1,6 @@
 package FTPpackage;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+
+
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -161,7 +162,7 @@ public class DES {
     		return c;
     }
     
-    public static void main(String[] args) throws UnsupportedEncodingException{
+   /* public static void main(String[] args) throws UnsupportedEncodingException{
         String origin="文钱坤12345678900986432345654321";
         System.out.println("原文：\n"+origin);
         DES des=new DES();
@@ -170,8 +171,33 @@ public class DES {
         System.out.println("temp:"+temp);
         des.decode(temp, key);
 
+    	String origin="文钱坤";
+        String xx = "123";
+        byte[] nexx = xx.getBytes();
+        for(int i=0 ; i < nexx.length ; i++) {
+        	System.out.println(nexx[i]);
+        }
+        System.out.println("--------------------------------");
+        //System.out.println("原文：\n"+origin);
+        DES des=new DES();
+        String key = "zzzzzzzz";
+        //String temp = des.encode(origin, key);
+        byte[] neyy = des.encode_b(nexx, key);
+        for(int i=0 ; i < neyy.length ; i++) {
+        	System.out.println(neyy[i]);
+        }
+        nexx = des.decode_b(neyy, key);
+        System.out.println("--------------------------------");
+        for(int i=0 ; i < nexx.length ; i++) {
+        	System.out.println(nexx[i]);
+        }
+        
+        System.out.println(new String(nexx));
+       // System.out.println("temp:"+temp);
+       // temp = des.decode(temp, key);
+      //  System.out.println(temp);
 
-    }
+    }*/
     /***代码运行结果：
      * 
      原文：

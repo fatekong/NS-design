@@ -22,17 +22,19 @@ public class Select{
 		contentPane.setLayout(null);
 		//ta1.setBounds(60,30,70,20);
 		//contentPane.add(ta1);
-		button1.setBounds(30, 120, 100, 40);
-		button2.setBounds(150, 120, 100, 40);
+		button1.setBounds(80, 130, 150, 80);
+		button2.setBounds(380, 130, 150, 80);
 		//label1.setBounds(30,15,150,50);
-		label2.setBounds(60,50,150,50);
+		label2.setBounds(80,50,150,40);
+		label2.setFont(new Font("", Font.BOLD, 22));
 	//	contentPane.add(label1);
 		contentPane.add(label2);
 		contentPane.add(button1);
 		contentPane.add(button2);
         //ta1.setLineWrap(true); 
        // ta1.setWrapStyleWord(true); 
-		f.setSize(300,250);
+		f.setSize(600,300);
+		f.setResizable(false);
 		f.setVisible(true);
 		button1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

@@ -44,9 +44,9 @@ public class Client01 {
 	private String TS5 = "";
 	private String Ticketv = "";
 	private String Tickettgs = "";
-	public static BigInteger E;
-	public static BigInteger D;
-	public static BigInteger N;
+	public static BigInteger E = new BigInteger("881");
+	public static BigInteger D = new BigInteger("396089");
+	public static BigInteger N = new BigInteger("1765069");
 
 	// 给AS发送的包
 	public HashMap<String, String> ToAS() {
@@ -170,20 +170,20 @@ public class Client01 {
 		String TS5 = month + "." + date + "." + hour + "." + minute;
 		String Authenticator_beforeDES = MyID + "-" + ADc + "-" + TS5;
 		String Authenticator = des.encode(Authenticator_beforeDES, kcv);
-		Prime_Method prime_Method = new Prime_Method();
-		BigInteger p = prime_Method.GetPorQ();
-		BigInteger q = prime_Method.GetPorQ();
-		while (p.equals(q)) {
-			q = prime_Method.GetPorQ();
-		}
-		E = prime_Method.GetE(p, q);
-		D = prime_Method.GetD(p, q, E);
-		N = p.multiply(q);
+		//Prime_Method prime_Method = new Prime_Method();
+		//BigInteger p = prime_Method.GetPorQ();
+		//BigInteger q = prime_Method.GetPorQ();
+		//while (p.equals(q)) {
+		//	q = prime_Method.GetPorQ();
+		//}
+		//E = prime_Method.GetE(p, q);
+		//D = prime_Method.GetD(p, q, E);
+		//N = p.multiply(q);
 		tov.put("Prelude", Appoint_Prelude.C_V);
 		tov.put("Ticket", Ticketv);
 		tov.put("Authenticator", Authenticator);
-		tov.put("E", E.toString());
-		tov.put("N", N.toString());
+		//tov.put("E", E.toString());
+		//tov.put("N", N.toString());
 		return tov;
 	}
 
@@ -191,6 +191,7 @@ public class Client01 {
 		String TS5_beforeDES = fromv.get("TS5");
 		DES des = new DES();
 		String TS5_1 = des.decode(TS5_beforeDES, kcv);
+		System.out.println(TS5_1);
 		if (!TS5_1.equals(TS5)) {
 			String ts[] = TS5_1.split("\\.");
 			Calendar c = Calendar.getInstance();

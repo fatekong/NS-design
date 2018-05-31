@@ -54,8 +54,8 @@ class chatVThread extends Thread {
 		
 		//chatV.RSA_E[my] = fromclient.get("E");
 		//chatV.RSA_N[my] = fromclient.get("N");
-		chatV.RSA_E.put(MY_IP, fromclient.get("E"));
-		chatV.RSA_N.put(MY_IP, fromclient.get("N"));
+		//chatV.RSA_E.put(MY_IP, fromclient.get("E"));
+		//chatV.RSA_N.put(MY_IP, fromclient.get("N"));
 		
 		String Ticketv = des.decode(Ticketv_beforeDES, kv);
 		String ticket[] = Ticketv.split("-");
@@ -177,6 +177,7 @@ class chatVThread extends Thread {
 }
 
 public class chatV {
+	
 	// static final Vector<String> test = new Vector<String>();
 	//public static final int pre[] = { 0, 0, 0, 0 };//指针
 	public static HashMap<String,Integer> pre = new HashMap<String ,Integer>();//指针指示当前Client
@@ -198,6 +199,25 @@ public class chatV {
 	//public static String[] RSA_N = new String[4]; 
 	public static boolean sign = false;//开启信息
 	static chatVshow Vshow ;
+	public static void Get_Key(String ip) throws IOException {
+		FileReader reader = new FileReader("D:\\Vertificate\\" + ip + ".txt");
+        BufferedReader br = new BufferedReader(reader);
+        String str ="";
+        String bb ="";
+        while((str = br.readLine()) != null) {
+        		bb+=str;
+              System.out.println(str);
+        }
+        br.close();
+        reader.close();
+        String[] temp = bb.split("@");
+        String N = temp[0];
+        String E = temp[1];
+        chatV.RSA_E.put(ip, E);
+		chatV.RSA_N.put(ip, N);
+        System.out.println(N+"   "+E);
+
+	}
 	@SuppressWarnings("resource")
 	public static void main(String[] args) throws IOException, InterruptedException {
 		Vshow = new chatVshow();
@@ -218,6 +238,7 @@ public class chatV {
 				ip = ipp[1];
 			if(pre.get(ip)==null)
 				pre.put(ip, 0);
+			Get_Key(ip);
 			//table.put(ip, "true");
 			//ASThread forclient1 = new ASThread(10000);
 			//forclient1.start();

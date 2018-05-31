@@ -2,7 +2,9 @@ package Cpackage;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Random;
 import java.io.*;
+import java.math.BigInteger;
 import java.net.*;
 
 public class Cchatthread extends Thread {
@@ -20,7 +22,10 @@ public class Cchatthread extends Thread {
 	private InputStream in = null;
 	private ObjectInputStream ois = null;
 	private String ip = "";
-	public Cchatthread(int port, String f, String u , String IP) {
+	private String vn = "";
+	private String ve = "";
+			
+	public Cchatthread(int port, String f, String u , String IP) throws IOException {
 		//this.my = m;
 		this.portnum = port;
 		this.portnum_in = port + 1100;
@@ -28,11 +33,32 @@ public class Cchatthread extends Thread {
 		this.flag = f;
 		this.USER = u;
 		ip = IP;
+		GetCertificate();
+	}
+	
+	public void GetCertificate() throws IOException {
+		String file = "D:\\Certificate\\V.txt";
+		FileReader reader = new FileReader(file);
+		BufferedReader br = new BufferedReader(reader);
+		String str = null; 
+		String RSA[] = new String[2];
+        while((str = br.readLine()) != null) {   
+               System.out.println(str);
+               RSA = str.split("-");
+         } 
+         br.close();
+         reader.close();
+         vn = RSA[0];
+         ve = RSA[1];
+         System.out.println(vn);
+         System.out.println(ve);
 	}
 
+	@SuppressWarnings("deprecation")
 	public void breaksoc() throws IOException {
 		// Ser.close();
 		Soc.close();
+		this.stop();
 	}
 
 	public void run() {
@@ -44,6 +70,7 @@ public class Cchatthread extends Thread {
 				System.out.println("in连接成功！");
 				in = Soc.getInputStream();
 				ois = new ObjectInputStream(in);
+				//int time = 0;
 				while (true) {
 					@SuppressWarnings("unchecked")
 					HashMap<String, String> fromclient = (HashMap<String, String>) ois.readObject();
@@ -55,16 +82,34 @@ public class Cchatthread extends Thread {
 						String User_beforeDES = fromclient.get("user");
 						String Conv_beforeDES = fromclient.get("conv");
 						String Name_beforeDES = fromclient.get("name");
+						String Sect_beforeDES = fromclient.get("sect");
+						String Hash_beforeDES = fromclient.get("hash");
+						System.out.println("SSSSSSSSSSSSSSSSSS:" + Sect_beforeDES);
 						DES des = new DES();
+						MyHash mh = new MyHash();
 						String Time = "";
 						String User = "";
 						String Conv = "";
 						String Name = "";
 						// if(my == 0) {
+						String Sect = "";
+						Sect = des.decode(Sect_beforeDES, Client01.kcv);
 						Time = des.decode(Time_beforeDES, Client01.kcv);
 						User = des.decode(User_beforeDES, Client01.kcv);
 						Conv = des.decode(Conv_beforeDES, Client01.kcv);
 						Name = des.decode(Name_beforeDES, Client01.kcv);
+						System.out.println("sssssssssssssssssssss:"+Sect);
+						Transfer transfer = new Transfer(new BigInteger(vn));
+						System.out.println();
+						Sect = transfer.TransToMes(Sect, new BigInteger(ve));
+						System.out.println(Sect);
+						if(mh.MD5(Sect).equals(Hash_beforeDES)) {
+							System.out.println(Sect + "数字签名通过！");
+							
+						}else {
+							System.out.println(Sect + "数字签名未通过！");
+							break;
+						}
 						// System.out.println(Name);
 						String[] Names = Name.split("-");
 						// }
@@ -79,7 +124,10 @@ public class Cchatthread extends Thread {
 						 */
 						System.out.println("In:" + Time + "-" + User + ":" + Conv);
 						Client01.sw.SetInfo(Time + "-" + User + ":" + Conv);
+						//if(time != 0)
+						Client01.sw.ClearUser();
 						Client01.sw.SetUser(Names);
+						//time ++ ;
 						System.out.println(Name);
 						System.out.println("----------------------------------------------");
 					} else if (Prelude.equals(Appoint_Prelude.V_C_chatcut)) {
@@ -109,7 +157,7 @@ public class Cchatthread extends Thread {
 				System.out.println("out连接成功！");
 				out = Soc.getOutputStream();
 				oos = new ObjectOutputStream(out);
-				int i = 0;
+				//int i = 0;
 				while (true) {
 					/*if (Appoint_Client.state[my] == 0) {
 						Soc.close();
@@ -144,11 +192,17 @@ public class Cchatthread extends Thread {
 						//System.out.println("等待输入......");
 						Client01.sw.ClearInto();
 						Client01.sw.ClearInfor();
+						
+						//改动部分21：56
+						Random rand = new Random();  
+						int random = rand.nextInt(9000) + 1000;
+						String randoms = random + "";
 						CONV = des.encode(label, Client01.kcv);
 						Transfer transfer = new Transfer(Client01.N);
-						Sect = transfer.TransToSec(Client01.MyID, Client01.D);
+						Sect = transfer.TransToSec(randoms, Client01.D);
 						Sect = des.encode(Sect, Client01.kcv);
-						Hash = myHash.MD5(Client01.MyID);
+						Hash = myHash.MD5(randoms);
+						//改动部分21：56
 					}
 					// }
 					/*
@@ -167,7 +221,7 @@ public class Cchatthread extends Thread {
 					toclient.put("hash", Hash);
 					oos.writeObject(toclient);
 					Thread.sleep(1000);
-					i++;
+					//i++;
 				}
 				// Client01.sw.SetInfo("不能发送");
 			} catch (IOException | InterruptedException e) {

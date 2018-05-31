@@ -2,6 +2,7 @@ package chatV_revision;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Random;
 import java.io.*;
 import java.net.*;
 import java.math.BigInteger;
@@ -16,7 +17,8 @@ public class Vchatthread extends Thread {
 	ServerSocket Serv;
 	Socket Sock;
 	private String Username = "";
-
+	private String MY_RSA_N = "2649289";
+	private String MY_RSA_D = "2572355";
 	/*
 	 * public Vchatthread(int port, String f ) { this.portnum = port; if (port ==
 	 * 10008) { my = 0; } else if (port == 10009) { my = 1; } else if (port ==
@@ -102,6 +104,7 @@ public class Vchatthread extends Thread {
 								ci.SetConv(Conv);
 								ci.SetTime(Time);
 								ci.SetUser(User);
+								
 								chatV.queue.add(ci);
 								Thread.sleep(500);
 							}
@@ -181,6 +184,7 @@ public class Vchatthread extends Thread {
 						// System.out.println(portnum + ":" + chatV.pre[my]);
 						System.out.println(portnum + ":" + chatV.pre.get(SOCKET_IP));
 						DES des = new DES();
+						MyHash myHash = new MyHash();
 						// for (int i = chatV.pre[my]; i < chatV.queue.size(); i++) {
 						int size = chatV.queue.size();
 						for (int i = chatV.pre.get(SOCKET_IP); i < size; i++) {
@@ -199,9 +203,22 @@ public class Vchatthread extends Thread {
 							 * toclient.put("conv", des.encode(chatV.queue.get(i).GetConv(),
 							 * chatV.kcv[my]));
 							 */
+							Random rand = new Random();  
+							
+							int random = rand.nextInt(9000) + 1000;
+							String randoms = random + "";
+							Transfer transfer = new Transfer(new BigInteger(MY_RSA_N));
+							String Sect = transfer.TransToSec(randoms, new BigInteger(MY_RSA_D));
+							System.out.println("Sect:" + Sect);
+							Sect = des.encode(Sect, chatV.kcv.get(SOCKET_IP));
+							String Hash = myHash.MD5(randoms);
+							
 							toclient.put("time", des.encode(chatV.queue.get(i).GetTime(), chatV.kcv.get(SOCKET_IP)));
 							toclient.put("user", des.encode(chatV.queue.get(i).GetUser(), chatV.kcv.get(SOCKET_IP)));
 							toclient.put("conv", des.encode(chatV.queue.get(i).GetConv(), chatV.kcv.get(SOCKET_IP)));
+							toclient.put("sect", Sect);
+							System.out.println("SSSSSSSSSSSSSSSSSS:" + Sect);
+							toclient.put("hash", Hash);
 							String namestring = "";
 							for(int index = 0 ; index < chatV.UserName.size() ; index ++) {
 								namestring += chatV.UserName.get(index) + "-";

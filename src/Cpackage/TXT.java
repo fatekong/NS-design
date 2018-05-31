@@ -8,7 +8,20 @@ import Cpackage.Client01;
 
 import java.awt.event.*;
 import java.io.*;
-
+class ButtonRun extends Thread{
+	private int i = 0;
+	public ButtonRun(int ii) {
+		i = ii;
+	}
+	public void run() {
+		if(i == 2) {
+			TXT.button2.doClick();
+		}
+		else {
+			TXT.button4.doClick();
+		}
+	}
+}
 public class TXT {
 	String[] na = {"192.168.0.144","192.168.111","192.168.111","192.168.111","192.168.111"};
 	String[] nb = {};
@@ -18,10 +31,11 @@ public class TXT {
 	public static int time2;
 	JFrame f = new JFrame("文件传输");
 	JButton button1 = new JButton("选择文件");
-	JButton button2 = new JButton("上传");
+	static JButton button2 = new JButton("上传");
 	JButton button3 = new JButton("获取文件");
-	JButton button4 = new JButton("下载");
+	static JButton button4 = new JButton("下载");
 	JButton button5 = new JButton("退出");
+	//JButton button6 = new JButton("上传&下载");
 	final JTextArea ta1 = new JTextArea();
 	final JComboBox ta2 = new JComboBox();
 	final JComboBox ta3 = new JComboBox(na);
@@ -54,6 +68,7 @@ public class TXT {
 		button3.setBounds(90, 340, 100, 40);
 		button4.setBounds(560, 340, 100, 40);
 		button5.setBounds(560, 500, 100, 40);
+		//button6.setBounds(400, 500, 100, 40);
 		label1.setBounds(20, 80, 700, 40);
 		label1.setFont(new Font("", Font.BOLD, 18));
 		label2.setBounds(20, 290, 700, 40);
@@ -67,6 +82,7 @@ public class TXT {
 		contentPane.add(button3);
 		contentPane.add(button4);
 		contentPane.add(button5);
+		//contentPane.add(button6);
 		contentPane.add(label3);
 		ta1.setLineWrap(true);
 		ta1.setWrapStyleWord(true);
@@ -100,6 +116,7 @@ public class TXT {
 				Client01.FileName = sr[sr.length-1];
 				System.out.println(Client01.FileName);
 				Client01.sign = true;
+				 //progressBar1.setString(""); 
 		        new Thread(){  
 		            public void run(){  
 		            	while(time1==0)
@@ -120,7 +137,9 @@ public class TXT {
 		                      progressBar1.setValue(i);  
 		                }
 		                time1=0;
-		                progressBar1.setString("上传完成");  
+		                JOptionPane.showMessageDialog(null, "上传完成！");
+		                //progressBar1.setString("上传完成");  
+		                progressBar1.setValue(100); 
 		            }
 		        }.start();
 			}
@@ -137,6 +156,7 @@ public class TXT {
 			public void actionPerformed(ActionEvent e) {
 				Client01.FileName_d=(String)ta2.getSelectedItem();
 				Client01.kk = 1;
+				progressBar2.setValue(0); 
 		        new Thread(){  
 		            public void run(){  
 		            	while(time2==0)
@@ -158,7 +178,10 @@ public class TXT {
 		                      progressBar2.setValue(i);  
 		                }
 		                time2=0;
-		                progressBar2.setString("下载完成");  
+		                JOptionPane.showMessageDialog(null, "下载完成！");
+		                //progressBar1.setString("上传完成");  
+		                progressBar2.setValue(100); 
+		                //progressBar2.setString("下载完成");  
 		            }
 		        }.start();
 			}
@@ -170,6 +193,16 @@ public class TXT {
 				System.exit(0);
 			}
 		});
+		/*button6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ButtonRun br1 = new ButtonRun(2);
+				ButtonRun br2 = new ButtonRun(4);
+				br1.run();
+				br2.run();
+			 button2.doClick();
+			 button4.doClick();
+			}
+		});*/
 	}
 	
 	public String GetIPaddress() {

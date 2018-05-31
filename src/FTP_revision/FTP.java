@@ -10,8 +10,8 @@ import java.util.concurrent.Executors;
 
 
 class FTPVThread extends Thread {
-	static VFTPthread upload = null;
-	static VFTPthread download = null;
+	VFTPthread upload = null;
+	VFTPthread download = null;
 	public static final String SERVER_IP = "127.0.0.1";
 	int portnum;
 	int client_num;
@@ -112,21 +112,21 @@ class FTPVThread extends Thread {
 		try {
 			while (true) {
 				while(true) {
-					if(FTP.state.get(SOCKET_IP).equals(-1))
+					if(FTP.state.get(SOCKET_IP).equals(-1) || FTP.signforbreak.get(SOCKET_IP).equals("false"))
 						break;
-					else if(FTP.state.get(SOCKET_IP).equals(0))
+					else if(FTP.state.get(SOCKET_IP).equals(0) || FTP.signforbreak.get(SOCKET_IP).equals("true"))
 						Thread.sleep(500);
 					else if(FTP.state.get(SOCKET_IP).equals(1)) {
 						upload.Break();
 						System.out.println("upload关闭");
-						break;
+						//break;
 					}
 					else if(FTP.state.get(SOCKET_IP).equals(2)) {
 						download.Break();
 						System.out.println("download关闭");
-						break;
+						//break;
 					}
-						
+				
 				}
 				//ServerSocket Servers = new ServerSocket(portnum);
 				//Socket Sockets = Servers.accept();
@@ -169,6 +169,8 @@ class FTPVThread extends Thread {
 						upload.start();// C下载V的文件
 						download.start();// C向V上传文件
 						FTP.state.put(SOCKET_IP, 0);
+						//FTP.signfordown.put(SOCKET_IP, "false");
+						//FTP.signforup.put(SOCKET_IP, "false");
 						//System.out.println("出来了");
 					}
 				}
@@ -186,10 +188,13 @@ class FTPVThread extends Thread {
 
 public class FTP {
 	public static HashMap<String,Integer> state = new HashMap<String,Integer>();
-	public static final String FilePath = "D:\\学术\\资料\\智能优化\\差分进化";
+	public static final String FilePath = "D:\\TestforNS-design";
 	static String MyID = "FTP";
 	static int port = 10012;
+	//public static HashMap<String,String> signforup = new HashMap<String,String>();
+	//public static HashMap<String,String> signfordown = new HashMap<String,String>();
 	//static String kcv[] = new String[4];
+	public static HashMap<String,String> signforbreak = new HashMap<String,String>();
 	@SuppressWarnings("resource")
 	public static boolean signnn = false;
 	static FTPshow ftpshow ;
@@ -217,6 +222,7 @@ public class FTP {
 			//forclient1.start();
 				/////////////////////////////////////////////////////////////////
 			state.put(ip, -1);
+			signforbreak.put(ip, "true");
 			executor.execute(new FTPVThread(port,ip,Socket));
 			
 		}

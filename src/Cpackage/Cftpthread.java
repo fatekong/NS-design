@@ -84,8 +84,9 @@ public class Cftpthread extends Thread {
 	                	if(FromFTP.get("Prelude").equals(Appoint_Prelude.V_C_ftp_file)) {
 	                		int read = 0;
 	                		read = dis.read(bytes);
+	                		System.out.println("长度："+read);
 	                		//String s = new String(bytes);
-	                		bytes = des.encode_b(bytes, Client01.kcv);
+	                		bytes = des.encode_f(bytes, Client01.kcv);
 	                		//String s1 = des.encode(s, Client01.kcv);
 	                		//String s2 = des.decode(s1, Client01.kcv);
 	                		//System.out.println("文件的内容是  "+s2);
@@ -111,10 +112,17 @@ public class Cftpthread extends Thread {
 		                		break;
 		                	}
 		                	else{
+		                		while(true){
+		                			if( read%8 == 0)
+		                				break;
+		                			else
+		                				read ++ ;
+		                		}
 		                		TXT.time1 = (int) (lonng/1024+1);
 		                		System.out.println("send file...");
 		                		toFTP.put("Prelude", Appoint_Prelude.C_V_ftp_file);
 		                		toFTP.put("Flag","continue");
+		                		//toFTP.put("Length", read+"");
 		                		//toFTP.put("s",s);
 		                		oos.writeObject(toFTP);
 			                    dos.write(bytes, 0, read);
@@ -206,7 +214,7 @@ public class Cftpthread extends Thread {
 							ToFTP.put("Prelude", Appoint_Prelude.C_V_ftp_file);
 							System.out.println("recv file...");
 							length = dis.read(bytes);
-							bytes = des.decode_b(bytes, Client01.kcv);
+							bytes = des.decode_f(bytes, Client01.kcv);
 							fos.write(bytes, 0, length);  
 							oos.writeObject(ToFTP);
 		                    fos.flush();

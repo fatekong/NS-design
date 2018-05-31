@@ -20,6 +20,7 @@ public class SW extends JFrame {
 	final JTextArea ta3 = new JTextArea();
 	final JTextArea ta4 = new JTextArea();
 	final JTextArea ta5 = new JTextArea();
+	
 	JScrollPane jsp3 = new JScrollPane(ta3);
 	JScrollPane jsp4 = new JScrollPane(ta4);
 	JScrollPane jsp5 = new JScrollPane(ta5);
@@ -36,33 +37,40 @@ public class SW extends JFrame {
 
 	public SW() {
 		contentPane.setLayout(null);
-		comboBox1.setBounds(80, 30, 70, 20);
+		comboBox1.setBounds(130, 30, 100, 30);
 		comboBox1.addItem("chatV");
 		contentPane.add(comboBox1);
-		comboBox2.setBounds(360, 30, 120, 20);
+		ta4.setForeground(Color.BLUE);
+		comboBox2.setBounds(500, 30, 120, 30);
 		contentPane.add(comboBox2);
-		ta2.setBounds(230, 30, 70, 20);//用户名
+		ta2.setBounds(330, 30,100, 40);//用户名
 		/*ta3.setBounds(150, 110, 350, 200);//消息显示
 		ta4.setBounds(20, 110, 100, 200);//在线用户
 		ta5.setBounds(20, 350, 450, 40);//信息发送
 */		
-		jsp3.setBounds(150, 110, 350, 200);
+		jsp3.setBounds(200, 120, 400, 260);
 		jsp3.setVerticalScrollBarPolicy( JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		jsp4.setBounds(20, 110, 100, 200);
-		jsp5.setBounds(20, 350, 450, 40);
+		jsp4.setBounds(50, 120, 100, 260);
+		jsp5.setBounds(50, 450,550, 50);
 		contentPane.add(jsp3);
 		contentPane.add(jsp4);
 		contentPane.add(jsp5);
 		contentPane.add(ta2);
-		button1.setBounds(530, 30, 70, 40);
-		button2.setBounds(500, 350, 70, 40);
-		button3.setBounds(530, 80, 70, 40);
-		label1.setBounds(30, 15, 150, 50);
-		label2.setBounds(170, 15, 150, 50);
-		label3.setBounds(30, 65, 150, 50);
-		label4.setBounds(300, 65, 150, 50);
-		label6.setBounds(325, 15, 150, 50);
-		label5.setBounds(0, 300, 650, 50);
+        button1.setBounds(670, 30, 100, 40);
+		button2.setBounds(670, 450, 100, 40);
+		button3.setBounds(670, 90, 100, 40);
+		label1.setBounds(50, 20, 150, 50);
+		label1.setFont(new Font("", Font.BOLD, 18));
+		label2.setBounds(250, 20, 150, 50);
+		label2.setFont(new Font("", Font.BOLD, 18));
+		label3.setBounds(50, 70, 150, 50);
+		label3.setFont(new Font("", Font.BOLD, 18));
+		label4.setBounds(400, 70, 150, 50);
+		label4.setFont(new Font("", Font.BOLD, 18));
+		label5.setBounds(20, 400, 800, 50);
+		label5.setFont(new Font("", Font.BOLD, 18));
+		label6.setBounds(450, 20, 150, 50);
+		label6.setFont(new Font("", Font.BOLD, 18));
 		contentPane.add(label1);
 		contentPane.add(label2);
 		contentPane.add(label3);
@@ -74,13 +82,8 @@ public class SW extends JFrame {
 		contentPane.add(button3);
 		ta2.setLineWrap(true);
 		ta2.setWrapStyleWord(true);
-		ta3.setLineWrap(true);
-		ta3.setWrapStyleWord(true);
-		ta4.setLineWrap(true);
-		ta4.setWrapStyleWord(true);
-		ta5.setLineWrap(true);
-		ta5.setWrapStyleWord(true);
-		f.setSize(650, 450);
+		f.setSize(800, 550);
+		f.setResizable(false);
 		f.setVisible(true);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		button1.addActionListener(new ActionListener() {
@@ -91,13 +94,20 @@ public class SW extends JFrame {
 				IP=(String)comboBox2.getSelectedItem();//获取IP地址
 				Client01.break_internet = true;
 				Client01.thread_sign = true;
+				button1.setEnabled(false);
 				//System.out.println(UN);
 			}
 		});
 		button2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				IO = ta5.getText();
-				Client01.infor = true;
+				
+				if(Client.signforsend) {
+					Client01.infor = true;
+					IO = ta5.getText();
+				}else {
+					SetInfo("离线状态，不能发送“" + ta5.getText() + "”，请续连后再进行相关操作");
+					ClearInto();
+				}
 				//System.out.println(IO);
 				//SetInfo(GetInformation());
 				//ClearInto();
@@ -106,6 +116,7 @@ public class SW extends JFrame {
 		});
 		button3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				button1.setEnabled(true);
 				button1.setText("续连");
 				Client01.thread_sign = false;
 				//System.out.println(IO);
@@ -119,12 +130,21 @@ public class SW extends JFrame {
 	public void SetUser(String[] s) {
 		//ta2.setText("1");
 		//ta3.setText("3");
-		ta4.setText("");
+		//ta4.setText("");
 		for(int i = 0 ; i < s.length ; i++) {
 			ta4.append(s[i]+ "\n");
 		}
 		
 		//ta5.setText("5");
+	}
+	
+	
+	public void MyName() {
+		ta4.append(UN + "\n");
+	}
+	
+	public void ClearUser() {
+		ta4.setText("");
 	}
 	
 	public void ClearInto() {
